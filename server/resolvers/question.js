@@ -10,7 +10,9 @@ export default {
         console.warn(err)
         return {}
       }
-    }
+    },
+    answers: (parents, args, { models }) =>
+      models.Answer.findAll({ where: { questionId: parents.dataValues.id } })
   },
   Query: {
     allQuestions: (parents, args, { models }) => models.Question.findAll()

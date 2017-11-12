@@ -1,14 +1,15 @@
 export default `
   type Member {
-    id: Int!,
+    id: Int!
     admin: Boolean!
   }
   type Question {
-    id: Int!,
-    content: String!,
+    id: Int!
+    content: String!
     title: String!
-    memberId: Int!,
+    memberId: Int!
     owner: User!
+    answers: [Answer!]
   }
 
   type Query {
@@ -17,7 +18,7 @@ export default `
 
   type QuestionCreationResponse {
     ok: Boolean!
-    question: Question,
+    question: Question
     error: [Error!]
   }
 

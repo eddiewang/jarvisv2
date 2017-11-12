@@ -16,7 +16,7 @@ export default {
           user
         }
       } catch (err) {
-        throw new Error(err)
+        console.warn(err)
         return {
           ok: false
         }

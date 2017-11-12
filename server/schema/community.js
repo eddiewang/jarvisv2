@@ -23,6 +23,6 @@ export default `
 
   type Mutation {
     createCommunity(name: String!): CreateCommunityResponse!
-    addCommunityMember(email: String!, teamId: Int!): VoidResponse!
+    addCommunityMember(email: String!, communityId: Int!): VoidResponse!
   }
 `

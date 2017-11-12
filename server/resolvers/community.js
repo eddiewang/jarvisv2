@@ -1,9 +1,9 @@
 export default {
   Mutation: {
-    addCommunityMember: async (parent, { email, teamId }, { models, user }) => {
+    addCommunityMember: async (parent, { email, communityId }, { models, user }) => {
       try {
         const memberPromise = models.Member.findOne(
-          { where: { teamId, userId: user.id } },
+          { where: { communityId, userId: user.id } },
           { raw: true }
         )
         const userToAddPromise = models.User.findOne({ where: { email } }, { raw: true })
@@ -20,7 +20,7 @@ export default {
             errors: [{ path: "email", message: "Could not find user with this email" }]
           }
         }
-        await models.Member.create({ userId: userToAdd.id, teamId })
+        await models.Member.create({ userId: userToAdd.id, communityId })
         return {
           ok: true
         }

@@ -3,5 +3,15 @@ export default (sequelize, DataTypes) => {
     name: DataTypes.STRING
   })
 
+  Community.associate = models => {
+    Community.belongsToMany(models.User, {
+      through: models.Member,
+      foreignKey: {
+        name: "communityId",
+        field: "community_id"
+      }
+    })
+  }
+
   return Community
 }

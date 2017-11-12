@@ -1,6 +1,45 @@
 export default (sequelize, DataTypes) => {
   const Member = sequelize.define("member", {
-    user_id: DataTypes.INTEGER,
-    community_id: DataTypes.INTEGER
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
+    admin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   })
+
+  Member.associate = models => {
+    Member.belongsToMany(models.Question, {
+      through: "QuestionUpvote",
+      foreignKey: {
+        name: "memberId",
+        field: "member_id"
+      }
+    })
+    Member.belongsToMany(models.Question, {
+      through: "QuestionDownvote",
+      foreignKey: {
+        name: "memberId",
+        field: "member_id"
+      }
+    })
+    Member.belongsToMany(models.Answer, {
+      through: "AnswerUpvote",
+      foreignKey: {
+        name: "memberId",
+        field: "member_id"
+      }
+    })
+    Member.belongsToMany(models.Answer, {
+      through: "AnswerDownvote",
+      foreignKey: {
+        name: "memberId",
+        field: "member_id"
+      }
+    })
+  }
+
+  return Member
 }

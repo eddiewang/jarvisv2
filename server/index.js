@@ -3,8 +3,7 @@ const logger = require("./logger")
 const argv = require("minimist")(process.argv.slice(2))
 const setup = require("./middleware/frontendMiddleware")
 const isDev = process.env.NODE_ENV !== "production"
-const ngrok =
-  (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel ? require("ngrok") : false
+const ngrok = (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel ? require("ngrok") : false
 const resolve = require("path").resolve
 const bodyParser = require("body-parser")
 const detect = require("detect-port")
@@ -13,17 +12,17 @@ const app = express()
 const prompt = require("./react-dev-utils/prompt")
 const openBrowser = require("./react-dev-utils/openBrowser")
 const chalk = require("chalk")
+const path = require("path")
 
 // GraphQl
 import { graphqlExpress, graphiqlExpress } from "apollo-server-express"
 import { fileLoader, mergeTypes, mergeResolvers } from "merge-graphql-schemas"
 import { makeExecutableSchema } from "graphql-tools"
 
-const types = fileLoader(path.join(__dirname, "./schema"))
-const resolvers = mergeResolvers(
-  fileLoader(path.join(__dirname, "./resolvers"))
-)
-const typeDefs = mergeTypes(types)
+import models from "./models"
+
+const typeDefs = mergeTypes(fileLoader(path.join(__dirname, "./schema")))
+const resolvers = mergeResolvers(fileLoader(path.join(__dirname, "./resolvers")))
 
 const schema = makeExecutableSchema({
   typeDefs,
@@ -37,7 +36,10 @@ app.use(
   graphqlExpress({
     schema,
     context: {
-      models
+      models,
+      user: {
+        id: 1
+      }
     }
   })
 )
@@ -62,27 +64,27 @@ const protocol = process.env.HTTPS === true ? "https" : "http"
 const DEFAULT_PORT = argv.port || process.env.PORT || 3000
 const isInteractive = process.stdout.isTTY
 
-detect(DEFAULT_PORT).then(port => {
-  if (port === DEFAULT_PORT) {
-    run(port)
-    return
-  }
+models.sequelize.sync({ force: true }).then(() => {
+  detect(DEFAULT_PORT).then(port => {
+    if (port === DEFAULT_PORT) {
+      run(port)
+      return
+    }
 
-  if (isInteractive) {
-    const question = chalk.yellow(
-      `Something is already running on port ${DEFAULT_PORT}. Change ports?`
-    )
+    if (isInteractive) {
+      const question = chalk.yellow(
+        `Something is already running on port ${DEFAULT_PORT}. Change ports?`
+      )
 
-    prompt(question, true).then(shouldChangePort => {
-      if (shouldChangePort) {
-        run(port)
-      }
-    })
-  } else {
-    console.log(
-      chalk.red(`Something is already running on port ${DEFAULT_PORT}`)
-    )
-  }
+      prompt(question, true).then(shouldChangePort => {
+        if (shouldChangePort) {
+          run(port)
+        }
+      })
+    } else {
+      console.log(chalk.red(`Something is already running on port ${DEFAULT_PORT}`))
+    }
+  })
 })
 // Start your app.
 const run = port => {

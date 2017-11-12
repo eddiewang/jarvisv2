@@ -18,7 +18,7 @@ export default (sequelize, DataTypes) => {
         field: "question_id"
       }
     })
-    Questions.belongsToMany(models.Member, {
+    Question.belongsToMany(models.Member, {
       through: "QuestionDownvote",
       foreignKey: {
         name: "questionId",

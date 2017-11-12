@@ -22,20 +22,6 @@ export default (sequelize, DataTypes) => {
         field: "user_id"
       }
     })
-    User.belongsToMany(models.Question, {
-      through: "QuestionUpvote",
-      foreignKey: {
-        name: "userId",
-        field: "user_id"
-      }
-    })
-    User.belongsToMany(models.Question, {
-      through: "QuestionDownvote",
-      foreignKey: {
-        name: "userId",
-        field: "user_id"
-      }
-    })
   }
 
   return User

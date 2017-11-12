@@ -1,5 +1,5 @@
 import Sequelize from "sequelize"
-const sequelize = new Sequelize("slack", "eddiewang", "", {
+const sequelize = new Sequelize("scotiabank", "eddiewang", "", {
   dialect: "postgres",
   operatorsAliases: Sequelize.Op,
   define: {
@@ -9,6 +9,7 @@ const sequelize = new Sequelize("slack", "eddiewang", "", {
 
 const models = {
   User: sequelize.import("./user"),
+  Member: sequelize.import("./member"),
   Answer: sequelize.import("./answer"),
   Question: sequelize.import("./question"),
   Community: sequelize.import("./community")

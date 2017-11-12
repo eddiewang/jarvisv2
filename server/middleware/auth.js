@@ -19,7 +19,7 @@ export const createTokens = async (user, secret, refreshTokenSecret) => {
     },
     refreshTokenSecret,
     {
-      expireIn: "7d"
+      expiresIn: "7d"
     }
   )
 
@@ -37,10 +37,9 @@ export const refreshTokens = async (token, refreshToken, models, secret, secret2
   if (!userId) {
     return {}
   }
-
-  const user = await models.User.findOne({ where: { id: userId }, raw: true })
-
-  if (!user) {
+  try {
+    const user = await models.User.findOne({ where: { id: userId }, raw: true })
+  } catch (err) {
     return {}
   }
 
@@ -68,6 +67,11 @@ export const tryLogin = async (email, password, models, secret, secret2) => {
   }
 
   if (!user) {
+    return defaultErr
+  }
+
+  const valid = await bcrypt.compare(password, user.password)
+  if (!valid) {
     return defaultErr
   }
 

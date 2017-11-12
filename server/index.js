@@ -18,6 +18,9 @@ const path = require("path")
 import { graphqlExpress, graphiqlExpress } from "apollo-server-express"
 import { fileLoader, mergeTypes, mergeResolvers } from "merge-graphql-schemas"
 import { makeExecutableSchema } from "graphql-tools"
+import { refreshTokens } from "./middleware/auth"
+import cors from "cors"
+import jwt from "jsonwebtoken"
 
 import models from "./models"
 const SECRET = "jarvisasiofddfhoi1hoi23jnl1kejd"
@@ -31,21 +34,43 @@ const schema = makeExecutableSchema({
   resolvers
 })
 
+app.use(cors("*"))
+
+export const addUser = async (req, res, next) => {
+  const token = req.headers["x-token"]
+  if (token) {
+    try {
+      const { user } = jwt.verify(token, SECRET)
+      req.user = user
+    } catch (err) {
+      const refreshToken = req.headers["x-refresh-token"]
+      const newTokens = await refreshTokens(token, refreshToken, SECRET, SECRET2)
+      if (newTokens.token && newTokens.refreshToken) {
+        res.set("Access-Control-Expose-Headers", "x-token, x-refresh-token")
+        res.set("x-token", newTokens.token)
+        res.set("x-refresh-token", newTokens.refreshToken)
+      }
+      req.user = newTokens.user
+    }
+  }
+  next()
+}
+
+app.use(addUser)
+
 const graphqlEndpoint = "/graphql"
 app.use(
   graphqlEndpoint,
   bodyParser.json(),
-  graphqlExpress({
+  graphqlExpress(req => ({
     schema,
     context: {
       models,
       SECRET,
       SECRET2,
-      user: {
-        id: 1
-      }
+      user: req.user
     }
-  })
+  }))
 )
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -68,7 +93,7 @@ const protocol = process.env.HTTPS === true ? "https" : "http"
 const DEFAULT_PORT = argv.port || process.env.PORT || 3000
 const isInteractive = process.stdout.isTTY
 
-models.sequelize.sync({ force: true }).then(() => {
+models.sequelize.sync({}).then(() => {
   detect(DEFAULT_PORT).then(port => {
     if (port === DEFAULT_PORT) {
       run(port)

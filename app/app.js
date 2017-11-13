@@ -6,18 +6,27 @@ import Landing from 'containers/Landing'
 import { Provider } from 'mobx-react'
 import { MainStore } from 'stores/MainStore'
 
+import { ApolloProvider } from 'react-apollo'
+import ApolloClient from 'apollo-client-preset'
+
+import LoginPage from 'containers/LoginPage'
+
+const client = new ApolloClient()
+
 class App extends React.Component {
   mainStore = new MainStore()
 
   render () {
     return (
-      <Provider mainStore={this.mainStore}>
-        <Router>
-          <div className='app'>
-            <Route exact path='/' component={Landing} />
-          </div>
-        </Router>
-      </Provider>
+      <ApolloProvider client={client}>
+        <Provider mainStore={this.mainStore}>
+          <Router>
+            <div className='app'>
+              <Route exact path='/' component={LoginPage} />
+            </div>
+          </Router>
+        </Provider>
+      </ApolloProvider>
     )
   }
 }

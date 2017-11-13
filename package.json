@@ -23,6 +23,7 @@
     "babel-preset-react": "^6.22.0",
     "babel-preset-stage-0": "^6.22.0",
     "chalk": "^2.1.0",
+    "copy-webpack-plugin": "^4.2.0",
     "cross-env": "5.1.1",
     "css-loader": "^0.28.7",
     "eslint-config-standard": "^10.2.1",
@@ -56,6 +57,7 @@
     "webpack-hot-middleware": "^2.18.2"
   },
   "dependencies": {
+    "apollo-client-preset": "^1.0.2",
     "apollo-server-express": "^1.2.0",
     "axios": "^0.16.2",
     "bcrypt": "^1.0.3",
@@ -65,7 +67,8 @@
     "cors": "^2.8.4",
     "detect-port": "^1.2.1",
     "express": "^4.15.4",
-    "graphql": "0.11.7",
+    "graphql": "^0.11.7",
+    "graphql-tag": "^2.5.0",
     "graphql-tools": "2.7.2",
     "ip": "^1.1.4",
     "jsonwebtoken": "^8.1.0",
@@ -79,6 +82,7 @@
     "pg-hstore": "^2.3.2",
     "ramda": "^0.24.1",
     "react": "^15.6.1",
+    "react-apollo": "^2.0.1",
     "react-dom": "^15.6.1",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",

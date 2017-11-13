@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = options => ({
   entry: options.entry,
@@ -52,6 +53,7 @@ module.exports = options => ({
     new webpack.ProvidePlugin({
       fetch: 'exports-loader?'
     }),
+    new CopyWebpackPlugin([{ from: 'public' }]),
 
     new webpack.DefinePlugin({
       'process.env': {

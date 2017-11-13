@@ -26,15 +26,20 @@ const defaultState = {
 @observer
 class LoginPage extends Component {
   componentDidMount () {
-    extendObservable(this, defaultState)
+    extendObservable(this)
   }
   handleForm = e => {
     const { name, value } = e.target
     this[name] = value
   }
-  handleLogin = () => {}
+  handleLogin = e => {
+    e.preventDefault()
+    const { email, password } = this
+    this.props.UserStore.login({ email, password })
+  }
   render () {
     const { email, password, errors } = this
+    console.log(toJS(this.props.UserStore.login))
     return (
       <div className='login-wrapper '>
         <div className='bg-pic'>

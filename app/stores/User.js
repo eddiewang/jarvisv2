@@ -14,12 +14,13 @@ class User {
   }
 
   login = ({ email, password }) =>
-    fromPromise(
-      client.mutate({
+    client
+      .mutate({
         mutation: loginMutation,
         variables: { email, password }
       })
-    )
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
 }
 
 export default new User()

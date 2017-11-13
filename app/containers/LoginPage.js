@@ -119,12 +119,8 @@ class LoginPage extends Component {
       </div>
     )
   }
-  _pChange = e => {
-    this.props.ui.login.password = e.target.value
-  }
-  _eChange = e => {
-    this.props.ui.login.email = e.target.value
-  }
+  _pChange = e => {}
+  _eChange = e => {}
   _handleLogin = async e => {}
 }
 

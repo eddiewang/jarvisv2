@@ -12,6 +12,7 @@ import { ApolloProvider } from 'react-apollo'
 import ApolloClient from 'apollo-client-preset'
 
 import LoginPage from 'containers/LoginPage'
+import RegisterPage from 'containers/RegisterPage'
 
 const client = new ApolloClient()
 
@@ -63,6 +64,7 @@ class App extends React.Component {
             <MainContainer className='app'>
               <OnUpdate immediate call={runScripts} />
               <Route exact path='/' component={LoginPage} />
+              <Route exact path='/register' component={RegisterPage} />
             </MainContainer>
           </Router>
         </Provider>

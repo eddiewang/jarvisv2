@@ -5,16 +5,15 @@ import Landing from 'containers/Landing'
 import styled from 'styled-components'
 
 import { Provider } from 'mobx-react'
-import { MainStore } from 'stores/MainStore'
 import { OnUpdate } from 'rrc'
 
 import { ApolloProvider } from 'react-apollo'
-import ApolloClient from 'apollo-client-preset'
+import client from './apollo'
 
 import LoginPage from 'containers/LoginPage'
 import RegisterPage from 'containers/RegisterPage'
 
-const client = new ApolloClient()
+import UserStore from 'stores/User'
 
 const runScripts = () => {
   const $ = window.$
@@ -53,13 +52,14 @@ const runScripts = () => {
   }, 1000)
 }
 
+const stores = {
+  UserStore
+}
 class App extends React.Component {
-  mainStore = new MainStore()
-
   render () {
     return (
       <ApolloProvider client={client}>
-        <Provider mainStore={this.mainStore}>
+        <Provider {...stores}>
           <Router>
             <MainContainer className='app'>
               <OnUpdate immediate call={runScripts} />

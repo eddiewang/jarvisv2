@@ -1,54 +1,54 @@
-const express = require("express")
-const logger = require("./logger")
-const argv = require("minimist")(process.argv.slice(2))
-const setup = require("./middleware/frontendMiddleware")
-const isDev = process.env.NODE_ENV !== "production"
-const ngrok = (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel ? require("ngrok") : false
-const resolve = require("path").resolve
-const bodyParser = require("body-parser")
-const detect = require("detect-port")
-const myApi = require("./api")
+const express = require('express')
+const logger = require('./logger')
+const argv = require('minimist')(process.argv.slice(2))
+const setup = require('./middleware/frontendMiddleware')
+const isDev = process.env.NODE_ENV !== 'production'
+const ngrok = (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel ? require('ngrok') : false
+const resolve = require('path').resolve
+const bodyParser = require('body-parser')
+const detect = require('detect-port')
+const myApi = require('./api')
 const app = express()
-const prompt = require("./react-dev-utils/prompt")
-const openBrowser = require("./react-dev-utils/openBrowser")
-const chalk = require("chalk")
-const path = require("path")
+const prompt = require('./react-dev-utils/prompt')
+const openBrowser = require('./react-dev-utils/openBrowser')
+const chalk = require('chalk')
+const path = require('path')
 
 // GraphQl
-import { graphqlExpress, graphiqlExpress } from "apollo-server-express"
-import { fileLoader, mergeTypes, mergeResolvers } from "merge-graphql-schemas"
-import { makeExecutableSchema } from "graphql-tools"
-import { refreshTokens } from "./middleware/auth"
-import cors from "cors"
-import jwt from "jsonwebtoken"
+import { graphqlExpress, graphiqlExpress } from 'apollo-server-express'
+import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas'
+import { makeExecutableSchema } from 'graphql-tools'
+import { refreshTokens } from './middleware/auth'
+import cors from 'cors'
+import jwt from 'jsonwebtoken'
 
-import models from "./models"
-const SECRET = "jarvisasiofddfhoi1hoi23jnl1kejd"
-const SECRET2 = "jarvisasiodffdhoi1hoi23jnl1kejasdjlkfasdd"
+import models from './models'
+const SECRET = 'jarvisasiofddfhoi1hoi23jnl1kejd'
+const SECRET2 = 'jarvisasiodffdhoi1hoi23jnl1kejasdjlkfasdd'
 
-const typeDefs = mergeTypes(fileLoader(path.join(__dirname, "./schema")))
-const resolvers = mergeResolvers(fileLoader(path.join(__dirname, "./resolvers")))
+const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')))
+const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')))
 
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers
 })
 
-app.use(cors("*"))
+app.use(cors('*'))
 
 export const addUser = async (req, res, next) => {
-  const token = req.headers["x-token"]
+  const token = req.headers['x-token']
   if (token) {
     try {
       const { user } = jwt.verify(token, SECRET)
       req.user = user
     } catch (err) {
-      const refreshToken = req.headers["x-refresh-token"]
+      const refreshToken = req.headers['x-refresh-token']
       const newTokens = await refreshTokens(token, refreshToken, SECRET, SECRET2)
       if (newTokens.token && newTokens.refreshToken) {
-        res.set("Access-Control-Expose-Headers", "x-token, x-refresh-token")
-        res.set("x-token", newTokens.token)
-        res.set("x-refresh-token", newTokens.refreshToken)
+        res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token')
+        res.set('x-token', newTokens.token)
+        res.set('x-refresh-token', newTokens.refreshToken)
       }
       req.user = newTokens.user
     }
@@ -58,7 +58,7 @@ export const addUser = async (req, res, next) => {
 
 app.use(addUser)
 
-const graphqlEndpoint = "/graphql"
+const graphqlEndpoint = '/graphql'
 app.use(
   graphqlEndpoint,
   bodyParser.json(),
@@ -75,20 +75,20 @@ app.use(
 
 app.use(bodyParser.urlencoded({ extended: false }))
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
-app.use("/graphiql", graphiqlExpress({ endpointURL: graphqlEndpoint }))
-app.use("/api", myApi)
+app.use('/graphiql', graphiqlExpress({ endpointURL: graphqlEndpoint }))
+app.use('/api', myApi)
 
 // In production we need to pass these values in instead of relying on webpack
 setup(app, {
-  outputPath: resolve(process.cwd(), "build"),
-  publicPath: "/"
+  outputPath: resolve(process.cwd(), 'build'),
+  publicPath: '/'
 })
 
 // get the intended host and port number, use localhost and port 3000 if not provided
 const customHost = argv.host || process.env.HOST
 const host = customHost || null // Let http.Server use its default IPv6/4 host
-const prettyHost = customHost || "localhost"
-const protocol = process.env.HTTPS === true ? "https" : "http"
+const prettyHost = customHost || 'localhost'
+const protocol = process.env.HTTPS === true ? 'https' : 'http'
 
 const DEFAULT_PORT = argv.port || process.env.PORT || 3000
 const isInteractive = process.stdout.isTTY

@@ -50,9 +50,6 @@ module.exports = options => ({
   },
 
   plugins: options.plugins.concat([
-    new webpack.ProvidePlugin({
-      fetch: 'exports-loader?'
-    }),
     new CopyWebpackPlugin([{ from: 'public' }]),
 
     new webpack.DefinePlugin({

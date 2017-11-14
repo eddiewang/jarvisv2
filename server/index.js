@@ -13,12 +13,15 @@ const prompt = require('./react-dev-utils/prompt')
 const openBrowser = require('./react-dev-utils/openBrowser')
 const chalk = require('chalk')
 const path = require('path')
+import { createServer } from 'http'
 
 // GraphQl
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express'
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas'
 import { makeExecutableSchema } from 'graphql-tools'
 import { refreshTokens } from './middleware/auth'
+import { SubscriptionServer } from 'subscriptions-transport-ws'
+import { execute, subscribe } from 'graphql'
 import cors from 'cors'
 import jwt from 'jsonwebtoken'
 
@@ -75,7 +78,13 @@ app.use(
 
 app.use(bodyParser.urlencoded({ extended: false }))
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
-app.use('/graphiql', graphiqlExpress({ endpointURL: graphqlEndpoint }))
+app.use(
+  '/graphiql',
+  graphiqlExpress({
+    endpointURL: graphqlEndpoint,
+    subscriptionsEndpoint: 'ws://localhost:3000/subscriptions'
+  })
+)
 app.use('/api', myApi)
 
 // In production we need to pass these values in instead of relying on webpack
@@ -116,26 +125,58 @@ models.sequelize.sync({}).then(() => {
   })
 })
 // Start your app.
+
+const server = createServer(app)
 const run = port => {
-  app.listen(port, host, err => {
-    if (err) {
-      return logger.error(err.message)
-    }
+  server.listen(
+    port,
+    host,
+    err => {
+      if (err) {
+        return logger.error(err.message)
+      }
 
-    // Connect to ngrok in dev mode
-    if (ngrok) {
-      ngrok.connect(port, (innerErr, url) => {
-        if (innerErr) {
-          return logger.error(innerErr)
+      // Connect to ngrok in dev mode
+      if (ngrok) {
+        ngrok.connect(port, (innerErr, url) => {
+          if (innerErr) {
+            return logger.error(innerErr)
+          }
+
+          logger.appStarted(port, prettyHost, url)
+        })
+      } else {
+        logger.appStarted(port, prettyHost)
+      }
+      // if (isDev) {
+      //   openBrowser(protocol + '://' + prettyHost + ':' + port + '/')
+      // }
+    },
+    () => {
+      new SubscriptionServer(
+        {
+          execute,
+          subscribe,
+          schema,
+          onConnect: async ({ token, refreshToken }, webSocket) => {
+            if (token && refreshToken) {
+              try {
+                const { user } = jwt.verify(token, SECRET)
+                return { models, user }
+              } catch (err) {
+                const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2)
+                return { models, user: newTokens.user }
+              }
+            }
+
+            return { models }
+          }
+        },
+        {
+          server,
+          path: '/subscriptions'
         }
-
-        logger.appStarted(port, prettyHost, url)
-      })
-    } else {
-      logger.appStarted(port, prettyHost)
+      )
     }
-    // if (isDev) {
-    //   openBrowser(protocol + '://' + prettyHost + ':' + port + '/')
-    // }
-  })
+  )
 }

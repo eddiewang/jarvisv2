@@ -28,11 +28,6 @@ module.exports = require('./webpack.base.babel.js')({
       async: true
     }),
     new webpack.optimize.OccurrenceOrderPlugin(true),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false // ...but do not show warnings in the console (there is a lot of them)
-      }
-    }),
     new HtmlWebpackPlugin({
       template: 'public/index.html',
       minify: {

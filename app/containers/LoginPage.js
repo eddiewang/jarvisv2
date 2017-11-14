@@ -8,6 +8,8 @@ import { Link } from 'react-router-dom'
 // import { graphql, compose } from 'react-apollo'
 // import { signin } from 'controllers/Auth'
 import { extendObservable, toJS } from 'mobx'
+import { graphql } from 'react-apollo'
+import { loginMutation, meQuery } from 'controllers/User'
 
 function getRandomInt (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -32,14 +34,19 @@ class LoginPage extends Component {
     const { name, value } = e.target
     this[name] = value
   }
-  handleLogin = e => {
+  handleLogin = async e => {
     e.preventDefault()
     const { email, password } = this
-    this.props.UserStore.login({ email, password })
+    const { login, saveTokens } = this.props.UserStore
+    const response = await login({ email, password })
+    const { data: { login: { ok, token, refreshToken, errors } } } = response
+    if (ok && token && refreshToken) {
+      saveTokens(token, refreshToken)
+    }
   }
   render () {
+    console.log(this.props.data)
     const { email, password, errors } = this
-    console.log(toJS(this.props.UserStore.login))
     return (
       <div className='login-wrapper '>
         <div className='bg-pic'>
@@ -129,4 +136,5 @@ class LoginPage extends Component {
 
 // const appWithApollo = compose(graphql(signin, { name: 'signin' }))(LoginPage)
 
-export default LoginPage
+export default graphql(meQuery, { options: { fetchPolicy: 'network-only' } })(LoginPage)
+// export default LoginPage

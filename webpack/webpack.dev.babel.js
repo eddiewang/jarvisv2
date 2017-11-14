@@ -4,7 +4,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = require('./webpack.base.babel')({
   entry: [
-    // disabled eventsource-polyfill because who the fuck uses IE to dev
     'babel-polyfill',
     'webpack-hot-middleware/client?reload=true',
     path.join(process.cwd(), 'app/app.js')

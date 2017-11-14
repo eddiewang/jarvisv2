@@ -6,7 +6,7 @@ import { ApolloLink, split } from 'apollo-link'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 
-const httpLink = createHttpLink({ uri: '/graphql' })
+const httpLink = createHttpLink({ uri: 'http://localhost:3000/graphql' })
 const { localStorage } = window
 
 const middlewareLink = setContext(() => ({
@@ -17,6 +17,7 @@ const middlewareLink = setContext(() => ({
 }))
 
 const afterwareLink = new ApolloLink((operation, forward) => {
+  console.log(operation, forward)
   return forward(operation).map(response => {
     const { response: { headers } } = operation.getContext()
     if (headers) {
@@ -38,23 +39,25 @@ const afterwareLink = new ApolloLink((operation, forward) => {
 
 const httpLinkWithMiddleware = afterwareLink.concat(middlewareLink.concat(httpLink))
 
-// const wsLink = new WebSocketLink({
-//   uri: 'ws://localhost:8081/subscriptions',
-//   options: {
-//     reconnect: true,
-//     connectionParams: {
-//       token: localStorage.getItem('token'),
-//       refreshToken: localStorage.getItem('refreshToken')
-//     }
-//   }
-// })
+const wsLink = new WebSocketLink({
+  uri: 'ws://localhost:3000/subscriptions',
+  options: {
+    reconnect: true,
+    connectionParams: {
+      token: localStorage.getItem('token'),
+      refreshToken: localStorage.getItem('refreshToken')
+    }
+  }
+})
 
 const link = split(
   ({ query }) => {
+    console.log('HIHIHIHI')
     const { kind, operation } = getMainDefinition(query)
+    console.log(kind, operation)
     return kind === 'OperationDefinition' && operation === 'subscription'
   },
-  () => {},
+  wsLink,
   httpLinkWithMiddleware
 )
 

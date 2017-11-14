@@ -94,6 +94,7 @@
     "rrc": "^0.10.1",
     "sequelize": "^4.20.1",
     "styled-components": "^2.1.2",
+    "subscriptions-transport-ws": "^0.9.1",
     "whatwg-fetch": "^2.0.2"
   }
 }

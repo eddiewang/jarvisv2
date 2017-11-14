@@ -70,7 +70,12 @@ class LoginPage extends Component {
           <div className='p-l-50 m-l-20 p-r-50 m-r-20 p-t-50 m-t-30 sm-p-l-15 sm-p-r-15 sm-p-t-40'>
             <Logo />
             <p className='p-t-35'>Sign into your pages account</p>
-            <form id='form-login' className='p-t-15' role='form' onSubmit={this.handleLogin}>
+            <form
+              id='form-login'
+              className='p-t-15'
+              role='form'
+              onSubmit={this.handleLogin}
+            >
               <div className='form-group form-group-default'>
                 <label>Login</label>
                 <div className='controls'>
@@ -136,5 +141,7 @@ class LoginPage extends Component {
 
 // const appWithApollo = compose(graphql(signin, { name: 'signin' }))(LoginPage)
 
-export default graphql(meQuery, { options: { fetchPolicy: 'network-only' } })(LoginPage)
+export default graphql(meQuery, { options: { fetchPolicy: 'network-only' } })(
+  LoginPage
+)
 // export default LoginPage

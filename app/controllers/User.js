@@ -1,10 +1,9 @@
-import gql from 'graphql-tag'
+import { gql } from 'react-apollo'
 
 export const meQuery = gql`
   query {
-    me {
+    allUsers {
       id
-      firstName
     }
   }
 `

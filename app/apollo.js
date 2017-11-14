@@ -9,15 +9,18 @@ import { getMainDefinition } from 'apollo-utilities'
 const httpLink = createHttpLink({ uri: 'http://localhost:3000/graphql' })
 const { localStorage } = window
 
-const middlewareLink = setContext(() => ({
-  headers: {
-    'x-token': localStorage.getItem('token'),
-    'x-refresh-token': localStorage.getItem('refreshToken')
+const middlewareLink = setContext(req => {
+  console.log('middleware')
+  return {
+    headers: {
+      'x-token': localStorage.getItem('token'),
+      'x-refresh-token': localStorage.getItem('refreshToken')
+    }
   }
-}))
+})
 
 const afterwareLink = new ApolloLink((operation, forward) => {
-  console.log(operation, forward)
+  console.warn('afterware')
   return forward(operation).map(response => {
     const { response: { headers } } = operation.getContext()
     if (headers) {
@@ -65,3 +68,4 @@ export default new ApolloClient({
   link,
   cache: new InMemoryCache()
 })
+// export default new ApolloClient({ link: httpLink, cache: new InMemoryCache() })

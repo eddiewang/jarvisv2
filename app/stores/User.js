@@ -1,6 +1,6 @@
 import graphql from 'mobx-apollo'
 import { extendObservable, toJS, when } from 'mobx'
-import { loginMutation, meQuery } from 'controllers/User'
+import { loginMutation } from 'controllers/User'
 import client from '../apollo'
 import { fromPromise } from 'mobx-utils'
 

@@ -2,8 +2,46 @@ import { gql } from 'react-apollo'
 
 export const meQuery = gql`
   query {
+    me {
+      ok
+      user {
+        id
+        firstName
+        lastName
+        email
+      }
+      errors {
+        path
+        message
+      }
+    }
+  }
+`
+
+export const allUsersQuery = gql`
+  query {
     allUsers {
-      id
+     id
+     firstName
+     lastName
+    }
+  }
+`
+
+export const registerMutation = gql`
+  mutation ($email: String!, $password: String!, $jobRole: String!, $firstName: String!, $lastName: String!) {
+    register(email: $email, firstName: $firstName, lastName: $lastName, jobRole: $jobRole, password: $password){
+      ok
+      user {
+        id
+        firstName
+        lastName
+        email
+      }
+      errors {
+        path
+        message
+      }
     }
   }
 `

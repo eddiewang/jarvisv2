@@ -1,13 +1,30 @@
 import { extendObservable, toJS, when } from 'mobx'
-import { loginMutation } from 'controllers/User'
+import {
+  loginMutation,
+  registerMutation,
+  allUsersQuery
+} from 'controllers/User'
+import graphql from 'mobx-apollo'
 import client from '../apollo'
 import { fromPromise } from 'mobx-utils'
 
 const { localStorage } = window
 class User {
-  contructor () {
-    // this.me = graphql({ client, query: meQuery })
+  constructor () {
+    // this.me = graphql({ client, query: meQuery, fetchPolicy: 'network-only' })
+    this.allUsers = graphql({ client, query: allUsersQuery })
   }
+  register = ({ firstName, lastName, email, jobRole, password }) =>
+    client.mutate({
+      mutation: registerMutation,
+      variables: {
+        email,
+        password,
+        jobRole,
+        firstName,
+        lastName
+      }
+    })
 
   login = ({ email, password }) =>
     client.mutate({

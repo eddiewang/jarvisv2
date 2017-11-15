@@ -3,7 +3,9 @@ const logger = require('./logger')
 const argv = require('minimist')(process.argv.slice(2))
 const setup = require('./middleware/frontendMiddleware')
 const isDev = process.env.NODE_ENV !== 'production'
-const ngrok = (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel ? require('ngrok') : false
+const ngrok = (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel
+  ? require('ngrok')
+  : false
 const resolve = require('path').resolve
 const bodyParser = require('body-parser')
 const detect = require('detect-port')
@@ -30,7 +32,9 @@ const SECRET = 'jarvisasiofddfhoi1hoi23jnl1kejd'
 const SECRET2 = 'jarvisasiodffdhoi1hoi23jnl1kejasdjlkfasdd'
 
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')))
-const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')))
+const resolvers = mergeResolvers(
+  fileLoader(path.join(__dirname, './resolvers'))
+)
 
 const schema = makeExecutableSchema({
   typeDefs,
@@ -47,7 +51,12 @@ export const addUser = async (req, res, next) => {
       req.user = user
     } catch (err) {
       const refreshToken = req.headers['x-refresh-token']
-      const newTokens = await refreshTokens(token, refreshToken, SECRET, SECRET2)
+      const newTokens = await refreshTokens(
+        token,
+        refreshToken,
+        SECRET,
+        SECRET2
+      )
       if (newTokens.token && newTokens.refreshToken) {
         res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token')
         res.set('x-token', newTokens.token)
@@ -120,7 +129,9 @@ models.sequelize.sync({}).then(() => {
         }
       })
     } else {
-      console.log(chalk.red(`Something is already running on port ${DEFAULT_PORT}`))
+      console.log(
+        chalk.red(`Something is already running on port ${DEFAULT_PORT}`)
+      )
     }
   })
 })
@@ -164,7 +175,13 @@ const run = port => {
                 const { user } = jwt.verify(token, SECRET)
                 return { models, user }
               } catch (err) {
-                const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2)
+                const newTokens = await refreshTokens(
+                  token,
+                  refreshToken,
+                  models,
+                  SECRET,
+                  SECRET2
+                )
                 return { models, user: newTokens.user }
               }
             }

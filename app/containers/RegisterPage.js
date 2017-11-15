@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom'
 import styled from 'styled-components'
 // import notify from '.controllers/Notifications'
 // import { capitalize, checkEmpty } from './helper/helper'
+import { extendObservable } from 'mobx'
 import Logo from 'components/Logo'
 
 const defaultRegistrationState = {
@@ -16,14 +17,44 @@ const defaultRegistrationState = {
   success: false
 }
 
-@inject('mainStore')
+@inject('UserStore')
 @observer
 class RegisterPage extends Component {
+  componentDidMount () {
+    extendObservable(this, defaultRegistrationState)
+  }
+  handleForm = e => {
+    const { name, value } = e.target
+    this[name] = value
+  }
+  handleRegister = async e => {
+    e.preventDefault()
+    const { firstName, lastName, jobRole, email, password } = this
+    const { register, saveTokens } = this.props.UserStore
+    const userObject = {
+      firstName,
+      lastName,
+      jobRole,
+      email,
+      password
+    }
+    try {
+      const response = await register(userObject)
+      const { data: { register: { ok, user, errors } } } = response
+      console.log(ok, user, errors)
+    } catch (err) {
+      console.log('err', err)
+    }
+    // if (ok && token && refreshToken) {
+    //   saveTokens(token, refreshToken)
+    //   this.success = true
+    // }
+  }
   render () {
-    const registration = defaultRegistrationState
+    const { firstName, lastName, jobRole, email, password, success } = this
     return (
       <div className='register-container full-height sm-p-t-30'>
-        {registration.success && <Redirect to='/verify' />}
+        {success && <Redirect to='/verify' />}
         <div className='d-flex justify-content-center flex-column full-height '>
           <Logo />
           <h3>
@@ -39,12 +70,12 @@ class RegisterPage extends Component {
                   <label>First Name</label>
                   <input
                     type='text'
-                    name='fname'
+                    name='firstName'
                     placeholder='John'
                     className='form-control'
                     required
-                    value={registration.firstname}
-                    onChange={this._fnChange}
+                    value={firstName}
+                    onChange={this.handleForm}
                   />
                 </div>
               </div>
@@ -53,12 +84,12 @@ class RegisterPage extends Component {
                   <label>Last Name</label>
                   <input
                     type='text'
-                    name='lname'
+                    name='lastName'
                     placeholder='Travolta'
                     className='form-control'
                     required
-                    value={registration.lastname}
-                    onChange={this._lnChange}
+                    value={lastName}
+                    onChange={this.handleForm}
                   />
                 </div>
               </div>
@@ -69,11 +100,11 @@ class RegisterPage extends Component {
                   <label>Job Role</label>
                   <input
                     type='text'
-                    name='uname'
+                    name='jobRole'
                     placeholder='Electrifying Engineer (this can be changed later)'
                     className='form-control'
-                    value={registration.jobRole}
-                    onChange={this._jrChange}
+                    value={jobRole}
+                    onChange={this.handleForm}
                     required
                   />
                 </div>
@@ -85,11 +116,11 @@ class RegisterPage extends Component {
                   <label>Password</label>
                   <input
                     type='password'
-                    name='pass'
+                    name='password'
                     placeholder='Minimum of 4 Charactors'
                     className='form-control'
-                    onChange={this._pwChange}
-                    value={registration.password}
+                    onChange={this.handleForm}
+                    value={password}
                     required
                   />
                 </div>
@@ -104,8 +135,8 @@ class RegisterPage extends Component {
                     name='email'
                     placeholder='We will send activation email to you'
                     className='form-control'
-                    onChange={this._eChange}
-                    value={registration.email || ''}
+                    onChange={this.handleForm}
+                    value={email}
                     required
                   />
                 </div>
@@ -127,7 +158,7 @@ class RegisterPage extends Component {
               </div>
             </div>
             <button
-              onClick={this._handleSignup}
+              onClick={this.handleRegister}
               className='btn btn-primary btn-cons m-t-10'
               type='submit'
             >
@@ -137,14 +168,6 @@ class RegisterPage extends Component {
         </div>
       </div>
     )
-  }
-  _fnChange = e => {}
-  _lnChange = e => {}
-  _jrChange = e => {}
-  _pwChange = e => {}
-  _eChange = e => {}
-  _handleSignup = async e => {
-    e.preventDefault()
   }
 }
 
@@ -157,10 +180,5 @@ class RegisterPage extends Component {
 //   border: 1px solid #51646b;
 //   height: 80px;
 // `
-
-// const appWithApollo = compose(
-//   graphql(signup, { name: 'signup' }),
-//   graphql(setAvatar, { name: 'setAvatar' })
-// )(RegisterPage)
 
 export default RegisterPage

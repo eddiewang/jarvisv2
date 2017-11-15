@@ -3,6 +3,7 @@ export default `
     id: Int!
     firstName: String!
     lastName: String!
+    jobRole: String!
     email: String!
   }
 
@@ -31,7 +32,7 @@ export default `
   }
 
   type Mutation {
-    register(firstName: String!, lastName: String!, email: String!, password: String!): RegisterResponse!
+    register(firstName: String!, lastName: String!, jobRole: String!, email: String!, password: String!): RegisterResponse!
     login(email: String!, password: String!): LoginResponse!
   }
 `

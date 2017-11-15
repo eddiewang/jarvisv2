@@ -45,7 +45,7 @@ class LoginPage extends Component {
     }
   }
   render () {
-    console.log(this.props.data)
+    console.log(toJS(this.props.UserStore.allUsers))
     const { email, password, errors } = this
     return (
       <div className='login-wrapper '>
@@ -141,7 +141,5 @@ class LoginPage extends Component {
 
 // const appWithApollo = compose(graphql(signin, { name: 'signin' }))(LoginPage)
 
-export default graphql(meQuery, { options: { fetchPolicy: 'network-only' } })(
-  LoginPage
-)
+export default LoginPage
 // export default LoginPage

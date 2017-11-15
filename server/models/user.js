@@ -1,13 +1,16 @@
-import bcrypt from "bcrypt"
+import bcrypt from 'bcrypt'
 
 export default (sequelize, DataTypes) => {
   const User = sequelize.define(
-    "user",
+    'user',
     {
       firstName: {
         type: DataTypes.STRING
       },
       lastName: {
+        type: DataTypes.STRING
+      },
+      jobRole: {
         type: DataTypes.STRING
       },
       email: {
@@ -16,16 +19,20 @@ export default (sequelize, DataTypes) => {
         validate: {
           isEmail: {
             args: true,
-            msg: "Invalid email"
+            msg: 'Invalid email'
           }
         }
+      },
+      verified: {
+        type: DataTypes.BOOLEAN,
+        default: true
       },
       password: {
         type: DataTypes.STRING,
         validate: {
           len: {
             args: [5, 50],
-            msg: "Password needs to be between 5 and 50 characters long"
+            msg: 'Password needs to be between 5 and 50 characters long'
           }
         }
       }
@@ -44,8 +51,8 @@ export default (sequelize, DataTypes) => {
     User.belongsToMany(models.Community, {
       through: models.Member,
       foreignKey: {
-        name: "userId",
-        field: "user_id"
+        name: 'userId',
+        field: 'user_id'
       }
     })
   }

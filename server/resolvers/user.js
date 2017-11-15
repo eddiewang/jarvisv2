@@ -1,4 +1,5 @@
 import { tryLogin } from '../middleware/auth'
+import formatErrors from '../utils/formatErrors'
 
 export default {
   Query: {
@@ -29,9 +30,9 @@ export default {
           user
         }
       } catch (err) {
-        console.warn(err)
         return {
-          ok: false
+          ok: false,
+          errors: formatErrors(err, models)
         }
       }
     }

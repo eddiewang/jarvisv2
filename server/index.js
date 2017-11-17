@@ -16,6 +16,7 @@ const openBrowser = require('./react-dev-utils/openBrowser')
 const chalk = require('chalk')
 const path = require('path')
 import { createServer } from 'http'
+import mockData from './mock'
 
 // GraphQl
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express'
@@ -112,6 +113,7 @@ const DEFAULT_PORT = argv.port || process.env.PORT || 3000
 const isInteractive = process.stdout.isTTY
 
 models.sequelize.sync({}).then(() => {
+  mockData(models)
   detect(DEFAULT_PORT).then(port => {
     if (port === DEFAULT_PORT) {
       run(port)

@@ -38,10 +38,15 @@ class LoginPage extends Component {
     e.preventDefault()
     const { email, password } = this
     const { login, saveTokens } = this.props.UserStore
-    const response = await login({ email, password })
-    const { data: { login: { ok, token, refreshToken, errors } } } = response
-    if (ok && token && refreshToken) {
-      saveTokens(token, refreshToken)
+    try {
+      const response = await login({ email, password })
+      const { data: { login: { ok, token, refreshToken, errors } } } = response
+      console.log(response)
+      if (ok && token && refreshToken) {
+        saveTokens(token, refreshToken)
+      }
+    } catch (err) {
+      console.log('err', err)
     }
   }
   render () {

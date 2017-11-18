@@ -46,15 +46,22 @@ app.use(cors('*'))
 
 export const addUser = async (req, res, next) => {
   const token = req.headers['x-token']
-  if (token) {
+  console.log(token)
+  if (token != undefined && token != 'undefined') {
+    console.log('jwting')
+    console.log(token)
+    console.log(typeof token)
     try {
       const { user } = jwt.verify(token, SECRET)
+      console.log('trying')
       req.user = user
     } catch (err) {
       const refreshToken = req.headers['x-refresh-token']
+      console.log('error', err)
       const newTokens = await refreshTokens(
         token,
         refreshToken,
+        models,
         SECRET,
         SECRET2
       )
@@ -66,6 +73,7 @@ export const addUser = async (req, res, next) => {
       req.user = newTokens.user
     }
   }
+  console.log('this is the req user', req.user)
   next()
 }
 
@@ -112,7 +120,7 @@ const protocol = process.env.HTTPS === true ? 'https' : 'http'
 const DEFAULT_PORT = argv.port || process.env.PORT || 3000
 const isInteractive = process.stdout.isTTY
 
-models.sequelize.sync({}).then(() => {
+models.sequelize.sync({ force: true }).then(() => {
   mockData(models)
   detect(DEFAULT_PORT).then(port => {
     if (port === DEFAULT_PORT) {

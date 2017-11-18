@@ -3,17 +3,10 @@ import { gql } from 'react-apollo'
 export const meQuery = gql`
   query {
     me {
-      ok
-      user {
-        id
-        firstName
-        lastName
-        email
-      }
-      errors {
-        path
-        message
-      }
+      id
+      firstName
+      lastName
+      email
     }
   }
 `

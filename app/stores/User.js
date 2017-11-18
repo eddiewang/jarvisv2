@@ -34,6 +34,7 @@ class User {
     })
 
   saveTokens = async (token, refreshToken) => {
+    console.log('saving', token)
     localStorage.setItem('token', token)
     localStorage.setItem('refreshToken', refreshToken)
   }

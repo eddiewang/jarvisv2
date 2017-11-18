@@ -3,7 +3,7 @@ import { inject, observer } from 'mobx-react'
 // import notify from 'controllers/Notifications'
 // Components
 import Logo from 'components/Logo'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 // Graphql
 // import { graphql, compose } from 'react-apollo'
 // import { signin } from 'controllers/Auth'
@@ -41,19 +41,22 @@ class LoginPage extends Component {
     try {
       const response = await login({ email, password })
       const { data: { login: { ok, token, refreshToken, errors } } } = response
-      console.log(response)
       if (ok && token && refreshToken) {
         saveTokens(token, refreshToken)
       }
+      console.log(toJS(this.props.UserStore.me))
+      console.log(window.localStorage.getItem('token'))
     } catch (err) {
       console.log('err', err)
     }
   }
   render () {
-    console.log(toJS(this.props.UserStore.allUsers))
     const { email, password, errors } = this
+    const { me } = this.props.UserStore
+    console.log(toJS(me))
     return (
       <div className='login-wrapper '>
+        {!me.loading && me.data ? <Redirect to='/app' /> : null}
         <div className='bg-pic'>
           <img
             src={dfbg}

@@ -7,14 +7,8 @@ export default `
     email: String!
   }
 
-  type MeResponse {
-    ok: Boolean!
-    user: User
-    errors: [Error!]
-  }
-
   type Query {
-    me: MeResponse!
+    me: User!
     allUsers: [User!]!
   }
 

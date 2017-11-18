@@ -1,32 +1,40 @@
-import jwt from "jsonwebtoken"
-import _ from "lodash"
-import bcrypt from "bcrypt"
+import jwt from 'jsonwebtoken'
+import _ from 'lodash'
+import bcrypt from 'bcrypt'
 
-export const createTokens = async (user, secret, refreshTokenSecret) => {
+export const createTokens = async (user, secret, secret2) => {
   const createToken = jwt.sign(
     {
-      user: _.pick(user, ["id", "email"])
+      user: _.pick(user, ['id', 'email'])
     },
     secret,
     {
-      expiresIn: "1h"
+      expiresIn: '5h'
     }
   )
 
   const createRefreshToken = jwt.sign(
     {
-      user: _.pick(user, "id")
+      user: _.pick(user, 'id')
     },
-    refreshTokenSecret,
+    secret2,
     {
-      expiresIn: "7d"
+      expiresIn: '7d'
     }
   )
+
+  console.log(createToken)
 
   return [createToken, createRefreshToken]
 }
 
-export const refreshTokens = async (token, refreshToken, models, secret, secret2) => {
+export const refreshTokens = async (
+  token,
+  refreshToken,
+  models,
+  SECRET,
+  SECRET2
+) => {
   let userId = 0
   try {
     const { user: { id } } = jwt.decode(refreshToken)
@@ -34,16 +42,18 @@ export const refreshTokens = async (token, refreshToken, models, secret, secret2
   } catch (err) {
     return {}
   }
+
   if (!userId) {
     return {}
   }
-  try {
-    const user = await models.User.findOne({ where: { id: userId }, raw: true })
-  } catch (err) {
+
+  const user = await models.User.findOne({ where: { id: userId }, raw: true })
+
+  if (!user) {
     return {}
   }
 
-  const refreshSecret = user.password + secret2
+  const refreshSecret = user.password + SECRET2
 
   try {
     jwt.verify(refreshToken, refreshSecret)
@@ -51,7 +61,11 @@ export const refreshTokens = async (token, refreshToken, models, secret, secret2
     return {}
   }
 
-  const [newToken, newRefreshToken] = await createTokens(user, secret, refreshSecret)
+  const [newToken, newRefreshToken] = await createTokens(
+    user,
+    SECRET,
+    refreshSecret
+  )
   return {
     token: newToken,
     refreshToken: newRefreshToken,
@@ -59,25 +73,32 @@ export const refreshTokens = async (token, refreshToken, models, secret, secret2
   }
 }
 
-export const tryLogin = async (email, password, models, secret, secret2) => {
+export const tryLogin = async (email, password, models, SECRET, SECRET2) => {
   const user = await models.User.findOne({ where: { email }, raw: true })
-  const defaultErr = {
-    ok: false,
-    errors: [{ path: "login", message: "Invalid email or password" }]
-  }
-
   if (!user) {
-    return defaultErr
+    // user with provided email not found
+    return {
+      ok: false,
+      errors: [{ path: 'email', message: 'Wrong email' }]
+    }
   }
 
   const valid = await bcrypt.compare(password, user.password)
   if (!valid) {
-    return defaultErr
+    // bad password
+    return {
+      ok: false,
+      errors: [{ path: 'password', message: 'Wrong password' }]
+    }
   }
 
-  const refreshTokenSecret = user.password + secret2
+  const refreshTokenSecret = user.password + SECRET2
 
-  const [token, refreshToken] = await createTokens(user, secret, refreshTokenSecret)
+  const [token, refreshToken] = await createTokens(
+    user,
+    SECRET,
+    refreshTokenSecret
+  )
 
   return {
     ok: true,

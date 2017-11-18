@@ -12,6 +12,7 @@ import client from './apollo'
 
 import LoginPage from 'containers/LoginPage'
 import RegisterPage from 'containers/RegisterPage'
+import AppContainer from 'containers/AppContainer'
 
 import UserStore from 'stores/User'
 
@@ -65,6 +66,7 @@ class App extends React.Component {
               <OnUpdate immediate call={runScripts} />
               <Route exact path='/' component={LoginPage} />
               <Route exact path='/register' component={RegisterPage} />
+              <Route exact path='/app' component={AppContainer} />
             </MainContainer>
           </Router>
         </Provider>

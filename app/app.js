@@ -15,6 +15,7 @@ import RegisterPage from 'containers/RegisterPage'
 import AppContainer from 'containers/AppContainer'
 
 import UserStore from 'stores/User'
+import QuestionStore from 'stores/Question'
 
 const runScripts = () => {
   const $ = window.$
@@ -54,7 +55,8 @@ const runScripts = () => {
 }
 
 const stores = {
-  UserStore
+  UserStore,
+  QuestionStore
 }
 class App extends React.Component {
   render () {

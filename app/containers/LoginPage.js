@@ -44,8 +44,6 @@ class LoginPage extends Component {
       if (ok && token && refreshToken) {
         saveTokens(token, refreshToken)
       }
-      console.log(toJS(this.props.UserStore.me))
-      console.log(window.localStorage.getItem('token'))
     } catch (err) {
       console.log('err', err)
     }
@@ -53,7 +51,6 @@ class LoginPage extends Component {
   render () {
     const { email, password, errors } = this
     const { me } = this.props.UserStore
-    console.log(toJS(me))
     return (
       <div className='login-wrapper '>
         {!me.loading && me.data ? <Redirect to='/app' /> : null}

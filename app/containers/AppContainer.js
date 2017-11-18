@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import Sidebar from 'components/Sidebar'
 // import Overlay from './components/Overlay'
 // Pages
-// import StreamPage from './StreamPage'
+import StreamPage from 'containers/StreamPage'
 // import SingleQuestionPage from './SingleQuestionPage'
 // import CreateQuestionPage from './CreateQuestionPage'
 // import ProfilePage from './ProfilePage'
@@ -19,6 +19,8 @@ class AppContainer extends Component {
     return (
       <MainContainer>
         <Sidebar />
+        {this.props.UserStore.me ? null : <Redirect to='/' />}
+        <Route path={`${match.url}/stream/:category`} component={StreamPage} />
       </MainContainer>
     )
   }

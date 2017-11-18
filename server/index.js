@@ -46,18 +46,12 @@ app.use(cors('*'))
 
 export const addUser = async (req, res, next) => {
   const token = req.headers['x-token']
-  console.log(token)
   if (token != undefined && token != 'undefined') {
-    console.log('jwting')
-    console.log(token)
-    console.log(typeof token)
     try {
       const { user } = jwt.verify(token, SECRET)
-      console.log('trying')
       req.user = user
     } catch (err) {
       const refreshToken = req.headers['x-refresh-token']
-      console.log('error', err)
       const newTokens = await refreshTokens(
         token,
         refreshToken,
@@ -73,7 +67,6 @@ export const addUser = async (req, res, next) => {
       req.user = newTokens.user
     }
   }
-  console.log('this is the req user', req.user)
   next()
 }
 

@@ -9,7 +9,9 @@ export default `
   }
 
   type Query {
-    allQuestions: [Question!]!
+    allQuestions: [Question!]
+    singleQuestion(id: Int!): Question
+    categoryQuestions(category: Int!, amount: Int!, skip: Int!): [Question!]
   }
 
   type QuestionCreationResponse {

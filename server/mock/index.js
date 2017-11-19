@@ -37,7 +37,6 @@ const questions = {
 
 const community = ['design', 'code', 'people', 'product']
 
-let defaultMember
 export default async models => {
   // Create users
   await Promise.all(
@@ -48,6 +47,8 @@ export default async models => {
         })
         if (!exists) {
           const user = resolve(await models.User.create(users[u]))
+        } else {
+          resolve(0)
         }
       })
     })
@@ -69,16 +70,12 @@ export default async models => {
               admin: true
             })
           )
+        } else {
+          resolve(0)
         }
       })
     })
   )
-
-  try {
-    defaultMember = await models.Member.findOne({ where: { id: 1 } })
-  } catch (err) {
-    console.log("CRITICAL CAN'T FIND", err)
-  }
 
   // Create questions
   Object.keys(questions).forEach(async q => {
@@ -94,6 +91,9 @@ export default async models => {
         const question = await models.Question.create({
           title,
           content
+        })
+        const defaultMember = await models.Member.findOne({
+          where: { id: memberId }
         })
         await question.setMember(defaultMember)
       } catch (err) {

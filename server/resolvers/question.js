@@ -1,3 +1,5 @@
+import requiresAuth from '../permissions'
+
 export default {
   Question: {
     owner: async (parents, args, { models }) => {
@@ -15,7 +17,26 @@ export default {
       models.Answer.findAll({ where: { questionId: parents.dataValues.id } })
   },
   Query: {
-    allQuestions: (parents, args, { models }) => models.Question.findAll()
+    allQuestions: requiresAuth.createResolver(
+      async (parents, args, { models }) => models.Question.findAll()
+    ),
+    singleQuestion: requiresAuth.createResolver(
+      async (parents, { id }, { models }) =>
+        models.Question.findOne({ where: { id } })
+    ),
+    categoryQuestions: requiresAuth.createResolver(
+      async (parents, { category, amount, skip }, { models }) =>
+        models.Question.findAll({
+          include: [
+            {
+              model: models.Member,
+              where: { communityId: category }
+            }
+          ],
+          limit: amount,
+          offset: skip
+        })
+    )
   },
   Mutation: {
     createQuestion: async (parents, args, { models, user }) => {

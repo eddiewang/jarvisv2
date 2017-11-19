@@ -1,8 +1,4 @@
 export default `
-  type Member {
-    id: Int!
-    admin: Boolean!
-  }
   type Question {
     id: Int!
     content: String!

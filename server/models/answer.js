@@ -1,34 +1,26 @@
 export default (sequelize, DataTypes) => {
-  const Answer = sequelize.define("answer", {
+  const Answer = sequelize.define('answer', {
     title: DataTypes.STRING,
     content: DataTypes.STRING
   })
 
   Answer.associate = models => {
-    Answer.belongsTo(models.Member, {
-      foreignKey: {
-        name: "memberId",
-        field: "member_id"
-      }
-    })
+    Answer.belongsTo(models.Member)
     Answer.belongsTo(models.Question, {
       foreignKey: {
-        name: "questionId",
-        field: "question_id"
+        name: 'questionId'
       }
     })
     Answer.belongsToMany(models.Member, {
-      through: "AnswerUpvote",
+      through: 'AnswerUpvote',
       foreignKey: {
-        name: "answerId",
-        field: "answer_id"
+        name: 'answerId'
       }
     })
     Answer.belongsToMany(models.Member, {
-      through: "AnswerDownvote",
+      through: 'AnswerDownvote',
       foreignKey: {
-        name: "answerId",
-        field: "answer_id"
+        name: 'answerId'
       }
     })
   }

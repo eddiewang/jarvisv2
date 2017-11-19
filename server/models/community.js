@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Community = sequelize.define("community", {
+  const Community = sequelize.define('community', {
     name: DataTypes.STRING
   })
 
@@ -7,8 +7,7 @@ export default (sequelize, DataTypes) => {
     Community.belongsToMany(models.User, {
       through: models.Member,
       foreignKey: {
-        name: "communityId",
-        field: "community_id"
+        name: 'communityId'
       }
     })
   }

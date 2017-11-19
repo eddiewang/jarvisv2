@@ -51,8 +51,7 @@ export default (sequelize, DataTypes) => {
     User.belongsToMany(models.Community, {
       through: models.Member,
       foreignKey: {
-        name: 'userId',
-        field: 'user_id'
+        name: 'userId'
       }
     })
   }

@@ -17,13 +17,88 @@ const users = {
   }
 }
 
-export default models => {
-  Object.keys(users).forEach(async u => {
-    const exists = await models.User.findOne({
-      where: { email: users[u].email }
+const questions = {
+  q1: {
+    title: 'How many vacation days can I take a year?',
+    content: 'Loream ipsum',
+    memberId: 1
+  },
+  q2: {
+    title: 'This is another sample question',
+    content: 'leam asn',
+    memberId: 2
+  },
+  q3: {
+    title: 'This is the third question',
+    content: 'lean and stmo',
+    memberId: 3
+  }
+}
+
+const community = ['design', 'code', 'people', 'product']
+
+let defaultMember
+export default async models => {
+  // Create users
+  await Promise.all(
+    Object.keys(users).map(u => {
+      return new Promise(async (resolve, reject) => {
+        const exists = await models.User.findOne({
+          where: { email: users[u].email }
+        })
+        if (!exists) {
+          const user = resolve(await models.User.create(users[u]))
+        }
+      })
     })
+  )
+
+  // Create communities and link admin user.
+  await Promise.all(
+    community.map(name => {
+      return new Promise(async (resolve, reject) => {
+        const exists = await models.Community.findOne({
+          where: { name }
+        })
+        if (!exists) {
+          const community = await models.Community.create({ name })
+          resolve(
+            await models.Member.create({
+              communityId: community.id,
+              userId: 1,
+              admin: true
+            })
+          )
+        }
+      })
+    })
+  )
+
+  try {
+    defaultMember = await models.Member.findOne({ where: { id: 1 } })
+  } catch (err) {
+    console.log("CRITICAL CAN'T FIND", err)
+  }
+
+  // Create questions
+  Object.keys(questions).forEach(async q => {
+    const exists = await models.Question.findOne({
+      where: {
+        memberId: questions[q].memberId
+      }
+    })
+
     if (!exists) {
-      models.User.create(users[u])
+      const { title, content, memberId } = questions[q]
+      try {
+        const question = await models.Question.create({
+          title,
+          content
+        })
+        await question.setMember(defaultMember)
+      } catch (err) {
+        console.log('FATAL ERR CREATING ASSOCIATION', err)
+      }
     }
   })
 }

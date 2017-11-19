@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Member = sequelize.define("member", {
+  const Member = sequelize.define('member', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -13,31 +13,27 @@ export default (sequelize, DataTypes) => {
 
   Member.associate = models => {
     Member.belongsToMany(models.Question, {
-      through: "QuestionUpvote",
+      through: 'QuestionUpvote',
       foreignKey: {
-        name: "memberId",
-        field: "member_id"
+        name: 'memberId'
       }
     })
     Member.belongsToMany(models.Question, {
-      through: "QuestionDownvote",
+      through: 'QuestionDownvote',
       foreignKey: {
-        name: "memberId",
-        field: "member_id"
+        name: 'memberId'
       }
     })
     Member.belongsToMany(models.Answer, {
-      through: "AnswerUpvote",
+      through: 'AnswerUpvote',
       foreignKey: {
-        name: "memberId",
-        field: "member_id"
+        name: 'memberId'
       }
     })
     Member.belongsToMany(models.Answer, {
-      through: "AnswerDownvote",
+      through: 'AnswerDownvote',
       foreignKey: {
-        name: "memberId",
-        field: "member_id"
+        name: 'memberId'
       }
     })
   }

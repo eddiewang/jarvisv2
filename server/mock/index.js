@@ -35,6 +35,27 @@ const questions = {
   }
 }
 
+const answers = {
+  a1: {
+    title: 'test answer',
+    content: 'test content',
+    questionId: 1,
+    memberId: 1
+  },
+  a2: {
+    title: 'test answer',
+    content: 'test content',
+    questionId: 2,
+    memberId: 2
+  },
+  a3: {
+    title: 'test answer',
+    content: 'test content',
+    questionId: 2,
+    memberId: 3
+  }
+}
+
 const community = ['design', 'code', 'people', 'product']
 
 export default async models => {
@@ -48,7 +69,7 @@ export default async models => {
         if (!exists) {
           const user = resolve(await models.User.create(users[u]))
         } else {
-          resolve(0)
+          resolve(true)
         }
       })
     })
@@ -62,43 +83,89 @@ export default async models => {
           where: { name }
         })
         if (!exists) {
-          const community = await models.Community.create({ name })
-          resolve(
+          try {
+            const community = await models.Community.create({ name })
             await models.Member.create({
               communityId: community.id,
               userId: 1,
               admin: true
             })
-          )
+            resolve(true)
+          } catch (err) {
+            reject(err)
+          }
         } else {
-          resolve(0)
+          resolve(true)
         }
       })
     })
   )
-
+  console.log('QUESTION TIME')
   // Create questions
-  Object.keys(questions).forEach(async q => {
-    const exists = await models.Question.findOne({
-      where: {
-        memberId: questions[q].memberId
-      }
-    })
+  await Promise.all(
+    Object.keys(questions).map(q => {
+      return new Promise(async (resolve, reject) => {
+        const exists = await models.Question.findOne({
+          where: {
+            memberId: questions[q].memberId
+          }
+        })
 
-    if (!exists) {
-      const { title, content, memberId } = questions[q]
-      try {
-        const question = await models.Question.create({
-          title,
-          content
-        })
-        const defaultMember = await models.Member.findOne({
-          where: { id: memberId }
-        })
-        await question.setMember(defaultMember)
-      } catch (err) {
-        console.log('FATAL ERR CREATING ASSOCIATION', err)
-      }
-    }
+        if (!exists) {
+          const { title, content, memberId } = questions[q]
+          try {
+            const question = await models.Question.create({
+              title,
+              content
+            })
+            const defaultMember = await models.Member.findOne({
+              where: { id: memberId }
+            })
+            await question.setMember(defaultMember)
+            resolve(true)
+          } catch (err) {
+            reject(err)
+          }
+        } else {
+          resolve(true)
+        }
+      })
+    })
+  ).catch(err => {
+    console.log('QUESTION ERR', err)
   })
+
+  // Create answers
+  await Promise.all(
+    Object.keys(answers).forEach(a => {
+      return new Promise(async (resolve, reject) => {
+        const exists = await models.Answer.findOne({
+          where: {
+            memberId: answers[a].memberId
+          }
+        })
+
+        if (!exists) {
+          const { title, content, questionId, memberId } = answers[a]
+          try {
+            const answer = await models.Answer.create({ title, content })
+            const member = await models.Member.findOne({
+              where: { id: memberId }
+            })
+            const question = await models.Question.findOne({
+              where: { id: questionId }
+            })
+            await answer.setQuestion(question)
+            await answer.setMember(member)
+            resolve(true)
+          } catch (err) {
+            console.log('Fatal error in answers', err)
+            reject(err)
+          }
+        } else {
+          resolve(true)
+        }
+      })
+    })
+  )
 }

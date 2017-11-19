@@ -18,7 +18,11 @@ export default {
   },
   Query: {
     allQuestions: requiresAuth.createResolver(
-      async (parents, args, { models }) => models.Question.findAll()
+      async (parents, { amount, skip }, { models }) =>
+        models.Question.findAll({
+          limit: amount,
+          offset: skip
+        })
     ),
     singleQuestion: requiresAuth.createResolver(
       async (parents, { id }, { models }) =>

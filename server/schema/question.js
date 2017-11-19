@@ -9,7 +9,7 @@ export default `
   }
 
   type Query {
-    allQuestions: [Question!]
+    allQuestions(amount: Int!, skip: Int!): [Question!]
     singleQuestion(id: Int!): Question
     categoryQuestions(category: Int!, amount: Int!, skip: Int!): [Question!]
   }

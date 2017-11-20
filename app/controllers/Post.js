@@ -27,31 +27,11 @@ const PostFragment = {
       id
       title
       content
-      category
-      views
       user {
         firstname
         lastname
         jobRole
         id
-        avatar {
-          url
-        }
-      }
-      upvotes {
-        id
-      }
-      downvotes {
-        id
-      }
-      _upvotesMeta {
-        count
-      }
-      _downvotesMeta {
-        count
-      }
-      _answersMeta {
-        count
       }
     }
   `

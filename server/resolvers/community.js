@@ -1,23 +1,48 @@
+import requiresAuth from '../permissions'
+
 export default {
+  Query: {
+    allCommunities: requiresAuth.createResolver(
+      async (parents, args, { models, user }) => models.Community.findAll()
+    ),
+    community: requiresAuth.createResolver(
+      async (parents, { id }, { models }) =>
+        models.Community.findOne({ where: { id } })
+    )
+  },
   Mutation: {
-    addCommunityMember: async (parent, { email, communityId }, { models, user }) => {
+    addCommunityMember: async (
+      parent,
+      { email, communityId },
+      { models, user }
+    ) => {
       try {
         const memberPromise = models.Member.findOne(
           { where: { communityId, userId: user.id } },
           { raw: true }
         )
-        const userToAddPromise = models.User.findOne({ where: { email } }, { raw: true })
-        const [member, userToAdd] = await Promise.all([memberPromise, userToAddPromise])
+        const userToAddPromise = models.User.findOne(
+          { where: { email } },
+          { raw: true }
+        )
+        const [member, userToAdd] = await Promise.all([
+          memberPromise,
+          userToAddPromise
+        ])
         if (!member.admin) {
           return {
             ok: false,
-            errors: [{ path: "email", message: "You cannot add members to the team" }]
+            errors: [
+              { path: 'email', message: 'You cannot add members to the team' }
+            ]
           }
         }
         if (!userToAdd) {
           return {
             ok: false,
-            errors: [{ path: "email", message: "Could not find user with this email" }]
+            errors: [
+              { path: 'email', message: 'Could not find user with this email' }
+            ]
           }
         }
         await models.Member.create({ userId: userToAdd.id, communityId })
@@ -28,7 +53,7 @@ export default {
         console.log(err)
         return {
           ok: false,
-          errors: [{ path: "err", message: "error" }]
+          errors: [{ path: 'err', message: 'error' }]
         }
       }
     },
@@ -36,7 +61,11 @@ export default {
       try {
         const response = await models.sequelize.transaction(async () => {
           const community = await models.Community.create({ ...args })
-          await models.Member.create({ communityId: community.id, userId: user.id, admin: true })
+          await models.Member.create({
+            communityId: community.id,
+            userId: user.id,
+            admin: true
+          })
           return community
         })
 
@@ -48,7 +77,7 @@ export default {
         console.log(err)
         return {
           ok: false,
-          errors: [{ path: "err", message: "error" }]
+          errors: [{ path: 'err', message: 'error' }]
         }
       }
     }

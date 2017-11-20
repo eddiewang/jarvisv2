@@ -43,6 +43,7 @@ class LoginPage extends Component {
       const { data: { login: { ok, token, refreshToken, errors } } } = response
       if (ok && token && refreshToken) {
         saveTokens(token, refreshToken)
+        this.props.history.push('/app')
       }
     } catch (err) {
       console.log('err', err)
@@ -53,7 +54,7 @@ class LoginPage extends Component {
     const { me } = this.props.UserStore
     return (
       <div className='login-wrapper '>
-        {!me.loading && me.data ? <Redirect to='/app' /> : null}
+        {!me.loading && me.data ? <Redirect to='/app/stream/all' /> : null}
         <div className='bg-pic'>
           <img
             src={dfbg}

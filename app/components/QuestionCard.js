@@ -15,38 +15,32 @@ import InlineAvatar from './InlineAvatar'
 import CardStatTag from './CardStatTag'
 import VoteButton from './VoteButton'
 
-@inject('user')
+@inject('UserStore')
 @observer
 class QuestionCard extends Component {
   upvoteActive = () => {
-    return (
-      checkId(this.props.details.upvotes, this.props.user.profile.id).length > 0
-    )
+    return true
+    // return (
+    //   checkId(this.props.details.upvotes, this.props.user.profile.id).length > 0
+    // )
   }
   downvoteActive = () => {
-    return (
-      checkId(this.props.details.downvotes, this.props.user.profile.id).length >
-      0
-    )
+    return false
+    // return (
+    //   checkId(this.props.details.downvotes, this.props.user.profile.id).length >
+    //   0
+    // )
   }
   voteCount = () => {
-    const uData = this.props.details.upvotes
-    const dData = this.props.details.downvotes
-    return uData.length - dData.length
+    // const uData = this.props.details.upvotes
+    // const dData = this.props.details.downvotes
+    // return uData.length - dData.length
+    return 1
   }
   render () {
-    const {
-      title,
-      content,
-      user,
-      id,
-      category,
-      views,
-      _upvotesMeta,
-      _downvotesMeta,
-      _answersMeta
-    } = this.props.details
+    const { title, content, user, id, community } = this.props.details
     const categoryEnabled = this.props.match.params.category === 'all'
+    const category = community.name
     return (
       <div>
         <div className='card-block no-padding'>
@@ -91,8 +85,8 @@ class QuestionCard extends Component {
             <CardSection>
               <div className='row'>
                 <div className='col-md-12 text-right'>
-                  <CardStatTag title='Answers' stat={_answersMeta.count} />
-                  <CardStatTag title='Views' stat={views} />
+                  <CardStatTag title='Answers' stat={0} />
+                  <CardStatTag title='Views' stat={0} />
                   <CardStatTag title='Votes' stat={this.voteCount()} />
                 </div>
               </div>
@@ -103,50 +97,50 @@ class QuestionCard extends Component {
     )
   }
   _handleUpvote = async e => {
-    const userId = this.props.user.profile.id
-    const questionId = this.props.details.id
-    try {
-      if (this.upvoteActive()) {
-        await this.props.neutralize({
-          variables: {
-            userId,
-            questionId
-          }
-        })
-      } else {
-        await this.props.upvote({
-          variables: {
-            userId,
-            questionId
-          }
-        })
-      }
-    } catch (err) {
-      console.log(err)
-    }
+    // const userId = this.props.user.profile.id
+    // const questionId = this.props.details.id
+    // try {
+    //   if (this.upvoteActive()) {
+    //     await this.props.neutralize({
+    //       variables: {
+    //         userId,
+    //         questionId
+    //       }
+    //     })
+    //   } else {
+    //     await this.props.upvote({
+    //       variables: {
+    //         userId,
+    //         questionId
+    //       }
+    //     })
+    //   }
+    // } catch (err) {
+    //   console.log(err)
+    // }
   }
   _handleDownvote = async e => {
-    const userId = this.props.user.profile.id
-    const questionId = this.props.details.id
-    try {
-      if (this.downvoteActive()) {
-        await this.props.neutralize({
-          variables: {
-            userId,
-            questionId
-          }
-        })
-      } else {
-        await this.props.downvote({
-          variables: {
-            userId,
-            questionId
-          }
-        })
-      }
-    } catch (err) {
-      console.log(err)
-    }
+    // const userId = this.props.user.profile.id
+    // const questionId = this.props.details.id
+    // try {
+    //   if (this.downvoteActive()) {
+    //     await this.props.neutralize({
+    //       variables: {
+    //         userId,
+    //         questionId
+    //       }
+    //     })
+    //   } else {
+    //     await this.props.downvote({
+    //       variables: {
+    //         userId,
+    //         questionId
+    //       }
+    //     })
+    //   }
+    // } catch (err) {
+    //   console.log(err)
+    // }
   }
 }
 
@@ -170,4 +164,4 @@ const appWithApollo = compose(
   graphql(neutralizeQuestion, { name: 'neutralize' })
 )(QuestionCard)
 
-export default withRouter(appWithApollo)
+export default withRouter(QuestionCard)

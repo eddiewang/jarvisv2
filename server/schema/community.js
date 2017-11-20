@@ -3,7 +3,7 @@ export default `
   type Community {
     id: Int!
     name: String!
-    users: [User!]!
+    icon: String!
   }
 
   type CreateCommunityResponse {
@@ -13,6 +13,7 @@ export default `
   }
 
   type Query {
+    community(id: Int!): Community!,
     allCommunities: [Community!]!
   }
 

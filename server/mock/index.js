@@ -56,7 +56,24 @@ const answers = {
   }
 }
 
-const community = ['design', 'code', 'people', 'product']
+const communities = [
+  {
+    name: 'design',
+    icon: 'codepen'
+  },
+  {
+    name: 'code',
+    icon: 'server'
+  },
+  {
+    name: 'people',
+    icon: 'users'
+  },
+  {
+    name: 'product',
+    icon: 'target'
+  }
+]
 
 export default async models => {
   // Create users
@@ -77,14 +94,14 @@ export default async models => {
 
   // Create communities and link admin user.
   await Promise.all(
-    community.map(name => {
+    communities.map(({ name, icon }) => {
       return new Promise(async (resolve, reject) => {
         const exists = await models.Community.findOne({
           where: { name }
         })
         if (!exists) {
           try {
-            const community = await models.Community.create({ name })
+            const community = await models.Community.create({ name, icon })
             await models.Member.create({
               communityId: community.id,
               userId: 1,
@@ -100,7 +117,6 @@ export default async models => {
       })
     })
   )
-  console.log('QUESTION TIME')
   // Create questions
   await Promise.all(
     Object.keys(questions).map(q => {

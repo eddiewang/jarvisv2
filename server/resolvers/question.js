@@ -2,12 +2,31 @@ import requiresAuth from '../permissions'
 
 export default {
   Question: {
-    owner: async (parents, args, { models }) => {
+    user: async (parents, args, { models }) => {
       try {
         const { memberId } = parents.dataValues
         const member = await models.Member.findOne({ where: { id: memberId } })
-        const user = await models.User.findOne({ where: { id: member.userId } })
+        const user = await models.User.findOne(
+          { where: { id: member.userId } },
+          { raw: true }
+        )
         return user
+      } catch (err) {
+        console.warn(err)
+        return {}
+      }
+    },
+    community: async (parents, args, { models }) => {
+      try {
+        const { memberId } = parents.dataValues
+        const member = await models.Member.findOne({ where: { id: memberId } })
+        const community = await models.Community.findOne(
+          {
+            where: { id: member.communityId }
+          },
+          { raw: true }
+        )
+        return community
       } catch (err) {
         console.warn(err)
         return {}
@@ -18,11 +37,50 @@ export default {
   },
   Query: {
     allQuestions: requiresAuth.createResolver(
-      async (parents, { amount, skip }, { models }) =>
-        models.Question.findAll({
-          limit: amount,
-          offset: skip
-        })
+      async (parents, { amount, skip, communityId }, { models }) => {
+        let questions
+        if (communityId) {
+          questions = await models.Question.findAll(
+            {
+              limit: amount,
+              offset: skip,
+              include: [
+                {
+                  model: models.Member,
+                  where: { communityId }
+                }
+              ]
+            },
+            {
+              raw: true
+            }
+          )
+        } else {
+          questions = await models.Question.findAll(
+            {
+              limit: amount,
+              offset: skip
+            },
+            {
+              raw: true
+            }
+          )
+        }
+
+        if (questions.length > 0) {
+          return {
+            ok: true,
+            questions,
+            hasMore: true
+          }
+        } else {
+          return {
+            ok: true,
+            questions,
+            hasMore: false
+          }
+        }
+      }
     ),
     singleQuestion: requiresAuth.createResolver(
       async (parents, { id }, { models }) =>

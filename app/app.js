@@ -16,6 +16,7 @@ import AppContainer from 'containers/AppContainer'
 
 import UserStore from 'stores/User'
 import QuestionStore from 'stores/Question'
+import CommunityStore from 'stores/Community'
 
 const runScripts = () => {
   const $ = window.$
@@ -56,7 +57,8 @@ const runScripts = () => {
 
 const stores = {
   UserStore,
-  QuestionStore
+  QuestionStore,
+  CommunityStore
 }
 class App extends React.Component {
   render () {
@@ -68,7 +70,7 @@ class App extends React.Component {
               <OnUpdate immediate call={runScripts} />
               <Route exact path='/' component={LoginPage} />
               <Route exact path='/register' component={RegisterPage} />
-              <Route exact path='/app' component={AppContainer} />
+              <Route path='/app' component={AppContainer} />
             </MainContainer>
           </Router>
         </Provider>

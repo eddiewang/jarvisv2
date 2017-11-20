@@ -3,8 +3,20 @@ import React, { Component } from 'react'
 // Components
 import Logo from './Logo'
 import { Link } from 'react-router-dom'
+import SidebarLink from 'components/SidebarLink'
+import { inject, observer } from 'mobx-react'
 
+@inject('CommunityStore')
+@observer
 class Sidebar extends Component {
+  mapLinks = () => {
+    const { allCommunities } = this.props.CommunityStore
+    if (!allCommunities.loading && !allCommunities.error) {
+      return allCommunities.data.allCommunities.map(c => (
+        <SidebarLink key={c.id} community={c} />
+      ))
+    }
+  }
   render () {
     return (
       <nav className='page-sidebar' data-pages='sidebar'>
@@ -23,38 +35,7 @@ class Sidebar extends Component {
                 <i data-feather='activity' />
               </span>
             </li>
-            <li className=''>
-              <Link to='/app/stream/design'>
-                <span className='title'>Design</span>
-              </Link>
-              <span className='icon-thumbnail '>
-                <i data-feather='codepen' />
-              </span>
-            </li>
-            <li className=''>
-              <Link to='/app/stream/code'>
-                <span className='title'>Code</span>
-              </Link>
-              <span className='icon-thumbnail'>
-                <i data-feather='server' />
-              </span>
-            </li>
-            <li className=''>
-              <Link to='/app/stream/people'>
-                <span className='title'>People</span>
-              </Link>
-              <span className='icon-thumbnail'>
-                <i data-feather='users' />
-              </span>
-            </li>
-            <li className=''>
-              <Link to='/app/stream/product'>
-                <span className='title'>Product</span>
-              </Link>
-              <span className='icon-thumbnail'>
-                <i data-feather='target' />
-              </span>
-            </li>
+            {this.mapLinks()}
           </ul>
           <div className='clearfix' />
         </div>

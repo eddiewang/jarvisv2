@@ -19,8 +19,11 @@ class AppContainer extends Component {
     return (
       <MainContainer>
         <Sidebar />
-        {this.props.UserStore.me ? null : <Redirect to='/' />}
-        <Route path={`${match.url}/stream/:category`} component={StreamPage} />
+        <Route
+          exact
+          path={`${match.url}/stream/:category`}
+          component={StreamPage}
+        />
       </MainContainer>
     )
   }

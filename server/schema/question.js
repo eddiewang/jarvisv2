@@ -4,12 +4,19 @@ export default `
     content: String!
     title: String!
     memberId: Int!
-    owner: User!
+    user: User!
+    community: Community!
     answers: [Answer!]
   }
 
+  type AllQuestionsResponse {
+    ok: Boolean!
+    hasMore: Boolean!
+    questions: [Question!]
+  }
+
   type Query {
-    allQuestions(amount: Int!, skip: Int!): [Question!]
+    allQuestions(amount: Int!, skip: Int!, communityId: Int): AllQuestionsResponse!
     singleQuestion(id: Int!): Question
     categoryQuestions(category: Int!, amount: Int!, skip: Int!): [Question!]
   }

@@ -1,6 +1,10 @@
 export default (sequelize, DataTypes) => {
   const Community = sequelize.define('community', {
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    icon: {
+      type: DataTypes.STRING,
+      default: 'users'
+    }
   })
 
   Community.associate = models => {

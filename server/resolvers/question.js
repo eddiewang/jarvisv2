@@ -114,6 +114,43 @@ export default {
           ok: false
         }
       }
-    }
+    },
+    // communityId -> memberId + questionId
+    upvoteQuestion: requiresAuth.createResolver(
+      async (parents, { id }, { models, user }) => {
+        const question = await models.Question.findOne({
+          where: { id }
+        })
+        const questionMember = await models.Member.findOne({
+          where: {
+            id: question.memberId
+          }
+        })
+
+        const member = await models.Member.findOne({
+          where: {
+            communityId: questionMember.communityId,
+            userId: user.id
+          }
+        })
+
+        // const upvoteExists = await models.QuestionUpvote.findOne({
+        //   where: {
+        //     memberId: member.id,
+        //     questionId: id
+        //   }
+        // })
+
+        await models.Question.addMember(member, { through: 'QuestionUpvote' })
+        // await models.QuestionUpvote.create({
+        //   memberId: member.id,
+        //   questionId: id
+        // })
+
+        return {
+          ok: true
+        }
+      }
+    )
   }
 }

@@ -27,7 +27,12 @@ export default `
     error: [Error!]
   }
 
+  type VoteResponse {
+    ok: Boolean!
+  }
+
   type Mutation {
     createQuestion(title: String!, content: String!, memberId: Int!): QuestionCreationResponse!
+    upvoteQuestion(id: Int!): VoteResponse!
   }
 `

@@ -6,6 +6,9 @@ export default `
     memberId: Int!
     user: User!
     community: Community!
+    upvotes: Int!
+    downvotes: Int!
+    vote: String
     answers: [Answer!]
   }
 
@@ -16,7 +19,7 @@ export default `
   }
 
   type Query {
-    allQuestions(amount: Int!, skip: Int!, communityId: Int): AllQuestionsResponse!
+    allQuestions(amount: Int, skip: Int, communityId: Int): AllQuestionsResponse!
     singleQuestion(id: Int!): Question
     categoryQuestions(category: Int!, amount: Int!, skip: Int!): [Question!]
   }
@@ -27,12 +30,22 @@ export default `
     error: [Error!]
   }
 
+  type Vote {
+    vote: String!,
+    userId: String!,
+    questionId: String!
+  }
+
   type VoteResponse {
-    ok: Boolean!
+    ok: Boolean!,
+    vote: Vote,
+    question: Question,
+    error: [Error!]
   }
 
   type Mutation {
     createQuestion(title: String!, content: String!, memberId: Int!): QuestionCreationResponse!
     upvoteQuestion(id: Int!): VoteResponse!
+    downvoteQuestion(id: Int!): VoteResponse!
   }
 `

@@ -138,6 +138,12 @@ export default async models => {
               where: { id: memberId }
             })
             await question.setMember(defaultMember)
+            const vote = {
+              vote: 'u',
+              userId: defaultMember.userId,
+              questionId: question.id
+            }
+            await models.QuestionVotes.create(vote)
             resolve(true)
           } catch (err) {
             reject(err)

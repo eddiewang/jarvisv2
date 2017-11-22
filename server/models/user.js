@@ -54,6 +54,20 @@ export default (sequelize, DataTypes) => {
         name: 'userId'
       }
     })
+
+    User.belongsToMany(models.Question, {
+      through: models.QuestionVotes,
+      foreignKey: {
+        name: 'userId'
+      }
+    })
+
+    User.belongsToMany(models.Answer, {
+      through: models.AnswerVotes,
+      foreignKey: {
+        name: 'userId'
+      }
+    })
   }
 
   return User

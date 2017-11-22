@@ -15,32 +15,18 @@ import InlineAvatar from './InlineAvatar'
 import CardStatTag from './CardStatTag'
 import VoteButton from './VoteButton'
 
-@inject('UserStore')
+@inject('UserStore', 'QuestionStore')
 @observer
 class QuestionCard extends Component {
-  upvoteActive = () => {
-    return true
-    // return (
-    //   checkId(this.props.details.upvotes, this.props.user.profile.id).length > 0
-    // )
-  }
-  downvoteActive = () => {
-    return false
-    // return (
-    //   checkId(this.props.details.downvotes, this.props.user.profile.id).length >
-    //   0
-    // )
-  }
   voteCount = () => {
-    // const uData = this.props.details.upvotes
-    // const dData = this.props.details.downvotes
-    // return uData.length - dData.length
-    return 1
+    const { upvotes, downvotes } = this.props.details
+    return upvotes - downvotes
   }
   render () {
-    const { title, content, user, id, community } = this.props.details
+    const { title, content, user, id, community, vote } = this.props.details
     const categoryEnabled = this.props.match.params.category === 'all'
     const category = community.name
+    console.log(vote)
     return (
       <div>
         <div className='card-block no-padding'>
@@ -51,19 +37,19 @@ class QuestionCard extends Component {
                   <div className='btn-group m-r-15'>
                     {categoryEnabled &&
                       <button className='btn btn-tag btn-tag-light'>
-                        <Link to={`/app/stream/${category}`}>
+                        <Link to={`/app/stream/${id}`}>
                           {capitalize(category)}
                         </Link>
                       </button>}
                     <VoteButton
                       onClick={this._handleUpvote}
                       icon='fa-angle-double-up'
-                      active={this.upvoteActive()}
+                      active={vote === 'u'}
                     />
                     <VoteButton
                       onClick={this._handleDownvote}
                       icon='fa-angle-double-down'
-                      active={this.downvoteActive()}
+                      active={vote === 'd'}
                     />
                   </div>
 
@@ -97,50 +83,14 @@ class QuestionCard extends Component {
     )
   }
   _handleUpvote = async e => {
-    // const userId = this.props.user.profile.id
-    // const questionId = this.props.details.id
-    // try {
-    //   if (this.upvoteActive()) {
-    //     await this.props.neutralize({
-    //       variables: {
-    //         userId,
-    //         questionId
-    //       }
-    //     })
-    //   } else {
-    //     await this.props.upvote({
-    //       variables: {
-    //         userId,
-    //         questionId
-    //       }
-    //     })
-    //   }
-    // } catch (err) {
-    //   console.log(err)
-    // }
+    const { upvoteQuestion } = this.props.QuestionStore
+    const { id } = this.props.details
+    upvoteQuestion(id)
   }
   _handleDownvote = async e => {
-    // const userId = this.props.user.profile.id
-    // const questionId = this.props.details.id
-    // try {
-    //   if (this.downvoteActive()) {
-    //     await this.props.neutralize({
-    //       variables: {
-    //         userId,
-    //         questionId
-    //       }
-    //     })
-    //   } else {
-    //     await this.props.downvote({
-    //       variables: {
-    //         userId,
-    //         questionId
-    //       }
-    //     })
-    //   }
-    // } catch (err) {
-    //   console.log(err)
-    // }
+    const { downvoteQuestion } = this.props.QuestionStore
+    const { id } = this.props.details
+    downvoteQuestion(id)
   }
 }
 

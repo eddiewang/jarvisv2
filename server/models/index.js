@@ -9,7 +9,9 @@ const models = {
   Member: sequelize.import('./member'),
   Answer: sequelize.import('./answer'),
   Question: sequelize.import('./question'),
-  Community: sequelize.import('./community')
+  Community: sequelize.import('./community'),
+  AnswerVotes: sequelize.import('./answervotes'),
+  QuestionVotes: sequelize.import('./questionvotes')
 }
 
 Object.keys(models).forEach(name => {

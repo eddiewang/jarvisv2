@@ -1,4 +1,5 @@
 import requiresAuth from '../permissions'
+import formatErrors from '../utils/formatErrors'
 
 export default {
   Question: {
@@ -33,11 +34,29 @@ export default {
       }
     },
     answers: (parents, args, { models }) =>
-      models.Answer.findAll({ where: { questionId: parents.dataValues.id } })
+      models.Answer.findAll({ where: { questionId: parents.dataValues.id } }),
+    upvotes: (parents, args, { models }) =>
+      models.QuestionVotes.count({
+        where: { questionId: parents.id, vote: 'u' }
+      }),
+    downvotes: (parents, args, { models }) =>
+      models.QuestionVotes.count({
+        where: { questionId: parents.id, vote: 'd' }
+      }),
+    vote: async (parents, args, { models, user }) => {
+      const v = await models.QuestionVotes.findOne({
+        where: {
+          questionId: parents.id,
+          userId: user.id
+        }
+      })
+      if (!v) return null
+      return v.vote
+    }
   },
   Query: {
     allQuestions: requiresAuth.createResolver(
-      async (parents, { amount, skip, communityId }, { models }) => {
+      async (parents, { amount, skip = 0, communityId }, { models }) => {
         let questions
         if (communityId) {
           questions = await models.Question.findAll(
@@ -118,37 +137,99 @@ export default {
     // communityId -> memberId + questionId
     upvoteQuestion: requiresAuth.createResolver(
       async (parents, { id }, { models, user }) => {
-        const question = await models.Question.findOne({
-          where: { id }
-        })
-        const questionMember = await models.Member.findOne({
-          where: {
-            id: question.memberId
+        try {
+          const voteExists = await models.QuestionVotes.findOne({
+            where: { userId: user.id, questionId: id }
+          })
+          if (voteExists) {
+            if (voteExists.dataValues.vote == 'u') {
+              console.log('destroying')
+              voteExists.destroy()
+              const question = await models.Question.findOne({ where: { id } })
+              return {
+                ok: true,
+                question,
+                vote: null
+              }
+            } else {
+              console.log('updating')
+              voteExists.update({ vote: 'u' })
+              const question = await models.Question.findOne({ where: { id } })
+              return {
+                ok: true,
+                vote: voteExists,
+                question
+              }
+            }
+          } else {
+            console.log('not exists', voteExists)
+            const vote = {
+              vote: 'u',
+              userId: user.id,
+              questionId: id
+            }
+            const createVote = await models.QuestionVotes.create(vote)
+            const question = await models.Question.findOne({ where: { id } })
+            return {
+              ok: true,
+              vote: createVote,
+              question
+            }
           }
-        })
-
-        const member = await models.Member.findOne({
-          where: {
-            communityId: questionMember.communityId,
-            userId: user.id
+        } catch (err) {
+          const question = await models.Question.findOne({ where: { id } })
+          return {
+            ok: false,
+            errors: formatErrors(err, models),
+            question
           }
-        })
-
-        // const upvoteExists = await models.QuestionUpvote.findOne({
-        //   where: {
-        //     memberId: member.id,
-        //     questionId: id
-        //   }
-        // })
-
-        await models.Question.addMember(member, { through: 'QuestionUpvote' })
-        // await models.QuestionUpvote.create({
-        //   memberId: member.id,
-        //   questionId: id
-        // })
-
-        return {
-          ok: true
+        }
+      }
+    ),
+    downvoteQuestion: requiresAuth.createResolver(
+      async (parents, { id }, { models, user }) => {
+        try {
+          const voteExists = await models.QuestionVotes.findOne({
+            where: { userId: user.id, questionId: id }
+          })
+          if (voteExists) {
+            if (voteExists.dataValues.vote == 'd') {
+              voteExists.destroy()
+              const question = await models.Question.findOne({ where: { id } })
+              return {
+                ok: true,
+                vote: null,
+                question
+              }
+            } else {
+              voteExists.update({ vote: 'd' })
+              const question = await models.Question.findOne({ where: { id } })
+              return {
+                ok: true,
+                vote: voteExists,
+                question
+              }
+            }
+          } else {
+            const vote = {
+              vote: 'd',
+              userId: user.id,
+              questionId: id
+            }
+            const createVote = await models.QuestionVotes.create(vote)
+            const question = await models.Question.findOne({ where: { id } })
+            return {
+              ok: true,
+              vote: createVote,
+              question
+            }
+          }
+        } catch (err) {
+          console.log('uhoh')
+          return {
+            ok: false,
+            errors: formatErrors(err, models)
+          }
         }
       }
     )

@@ -1,15 +1,14 @@
 export default (sequelize, DataTypes) => {
-  const Member = sequelize.define('member', {
+  const QuestionVotes = sequelize.define('questionvote', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    admin: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
+    vote: {
+      type: DataTypes.STRING
     }
   })
 
-  return Member
+  return QuestionVotes
 }

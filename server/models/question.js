@@ -6,14 +6,8 @@ export default (sequelize, DataTypes) => {
 
   Question.associate = models => {
     Question.belongsTo(models.Member)
-    Question.belongsToMany(models.Member, {
-      through: 'QuestionUpvote',
-      foreignKey: {
-        name: 'questionId'
-      }
-    })
-    Question.belongsToMany(models.Member, {
-      through: 'QuestionDownvote',
+    Question.belongsToMany(models.User, {
+      through: models.QuestionVotes,
       foreignKey: {
         name: 'questionId'
       }

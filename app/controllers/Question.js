@@ -19,8 +19,23 @@ const QuestionFragment = gql`
   vote
  }
 `
+export const createQuestionMutation = gql`
+ mutation ($communityId: Int!, $content: String!, $title: String!) {
+  createQuestion(title: $title, content: $content, communityId: $communityId) {
+    ok
+    question {
+      ...QuestionDefault
+    }
+    error {
+      message
+    }
+  }
+ }
+ ${QuestionFragment}
+`
+
 export const allQuestionsQuery = gql`
-  query allQuestions($amount: Int, $skip: Int, $communityId: Int) {
+  query ($amount: Int, $skip: Int, $communityId: Int) {
     allQuestions(
       amount: $amount,
       skip: $skip,
@@ -55,6 +70,15 @@ export const downvoteQuestionMutation = gql`
         ...QuestionDefault
       }
       ok
+    }
+  }
+  ${QuestionFragment}
+`
+
+export const singleQuestionQuery = gql`
+  query ($id: Int!) {
+    singleQuestion(id: $id) {
+      ...QuestionDefault
     }
   }
   ${QuestionFragment}

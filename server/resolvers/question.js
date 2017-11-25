@@ -120,12 +120,31 @@ export default {
     )
   },
   Mutation: {
-    createQuestion: async (parents, args, { models, user }) => {
+    createQuestion: async (
+      parents,
+      { title, content, communityId },
+      { models, user }
+    ) => {
       try {
-        const question = await models.Question.create({ ...args })
+        const response = models.sequelize.transaction(async () => {
+          const member = await models.Member.findOne({
+            where: { userId: user.id, communityId }
+          })
+          const question = await models.Question.create({
+            title,
+            content,
+            memberId: member.id
+          })
+          await models.QuestionVotes.create({
+            vote: 'u',
+            userId: user.id,
+            questionId: question.id
+          })
+          return question
+        })
         return {
           ok: true,
-          question
+          question: response
         }
       } catch (err) {
         console.warn(err)

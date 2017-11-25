@@ -43,7 +43,7 @@ class LoginPage extends Component {
       const { data: { login: { ok, token, refreshToken, errors } } } = response
       if (ok && token && refreshToken) {
         saveTokens(token, refreshToken)
-        this.props.history.push('/app')
+        this.props.history.push('/app/stream/all')
       }
     } catch (err) {
       console.log('err', err)

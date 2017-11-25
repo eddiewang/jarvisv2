@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { inject, observer } from 'mobx-react'
 import { extendObservable } from 'mobx'
 import notify from 'utils/notification'
-import { checkEmpty } from 'utils/helper'
+import { checkEmpty, capitalize } from 'utils/helper'
 // Graphql
 // import { createQuestion } from '.controllers/Post'
 import { graphql, compose } from 'react-apollo'
@@ -36,20 +36,39 @@ const rq = {
     ['link']
   ]
 }
-@inject('UserStore')
+
+@inject('UserStore', 'CommunityStore', 'QuestionStore')
 @observer
 class CreateQuestionPage extends Component {
-  componentDidMount () {
+  constructor (props) {
+    super(props)
     extendObservable(this, defaultAskState)
+  }
+  componentDidMount () {
     window.$('.ql-toolbar').find(':button').attr('tabindex', '-1')
   }
-  selectCommunity = name => () => {
-    this.category = name
+  selectCommunity = id => () => {
+    this.category = id
+  }
+  mapCommunities = () => {
+    const { allCommunities } = this.props.CommunityStore
+
+    if (!allCommunities.loading && !allCommunities.error) {
+      return allCommunities.data.allCommunities.map(c => (
+        <CommunityTag
+          onSelect={this.selectCommunity}
+          selectedCategory={this.category}
+          name={capitalize(c.name)}
+          id={c.id}
+          key={c.id}
+        />
+      ))
+    }
   }
   render () {
     const { category, title, content, anonymous, pending } = this
+
     if (category && !pending) {
-      console.log('here')
       return <Redirect to={`/app/stream/${category}`} />
     } else {
       return (
@@ -64,22 +83,7 @@ class CreateQuestionPage extends Component {
                       <div className='col-md-12'>
                         <div className='inline'>
                           <h4>Choose a Community</h4>
-                          <CommunityTag
-                            onSelect={this.selectCommunity}
-                            name='Design'
-                          />
-                          <CommunityTag
-                            onSelect={this.selectCommunity}
-                            name='Code'
-                          />
-                          <CommunityTag
-                            onSelect={this.selectCommunity}
-                            name='People'
-                          />
-                          <CommunityTag
-                            onSelect={this.selectCommunity}
-                            name='Product'
-                          />
+                          {this.mapCommunities()}
                           <button
                             className={`btn btn-tag btn-tag-rounded m-r-20 m-b-10 m-t-10`}
                             disabled
@@ -137,60 +141,56 @@ class CreateQuestionPage extends Component {
   }
   _createQuestion = async e => {
     // TODO frontend validation
-    // const { ask } = this.props.ui
-    // if (checkEmpty(ask.category)) {
-    //   notify({
-    //     style: 'bar',
-    //     position: 'top-right',
-    //     message: 'Please set a category',
-    //     type: 'warning',
-    //     showClose: false,
-    //     timeout: 2000
-    //   })
-    // } else if (checkEmpty(ask.title)) {
-    //   notify({
-    //     style: 'bar',
-    //     position: 'top-right',
-    //     message: 'Please set a question title',
-    //     type: 'warning',
-    //     showClose: false,
-    //     timeout: 2000
-    //   })
-    // } else if (checkEmpty(ask.content)) {
-    //   notify({
-    //     style: 'bar',
-    //     position: 'top-right',
-    //     message: 'Please add more question content information',
-    //     type: 'warning',
-    //     showClose: false,
-    //     timeout: 2000
-    //   })
-    // } else {
-    //   try {
-    //     const { profile } = this.props.user
-    //     await this.props.createQuestion({
-    //       variables: {
-    //         title: ask.title,
-    //         content: ask.content,
-    //         userId: profile.id,
-    //         anonymous: ask.anonymous,
-    //         category: ask.category.toLowerCase()
-    //       }
-    //     })
-    //     ask.pending = false
-    //   } catch (err) {
-    //     // TODO implement error notify
-    //     console.log(err)
-    //     notify({
-    //       style: 'bar',
-    //       position: 'top-right',
-    //       message: 'Error posting question.',
-    //       type: 'danger',
-    //       showClose: false,
-    //       timeout: 2000
-    //     })
-    //   }
-    // }
+    const { title, content, category } = this
+    console.log(title, content, category)
+    if (typeof category !== 'number') {
+      notify({
+        style: 'bar',
+        position: 'top-right',
+        message: 'Please set a category',
+        type: 'warning',
+        showClose: false,
+        timeout: 2000
+      })
+    } else if (checkEmpty(title)) {
+      notify({
+        style: 'bar',
+        position: 'top-right',
+        message: 'Please set a question title',
+        type: 'warning',
+        showClose: false,
+        timeout: 2000
+      })
+    } else if (checkEmpty(content)) {
+      notify({
+        style: 'bar',
+        position: 'top-right',
+        message: 'Please add more question content information',
+        type: 'warning',
+        showClose: false,
+        timeout: 2000
+      })
+    } else {
+      try {
+        await this.props.QuestionStore.createQuestion({
+          title,
+          content,
+          communityId: category
+        })
+        this.pending = false
+      } catch (err) {
+        // TODO implement error notify
+        console.log(err)
+        notify({
+          style: 'bar',
+          position: 'top-right',
+          message: 'Error posting question.',
+          type: 'danger',
+          showClose: false,
+          timeout: 2000
+        })
+      }
+    }
   }
 }
 

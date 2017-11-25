@@ -9,6 +9,8 @@ import Sidebar from 'components/Sidebar'
 import StreamPage from 'containers/StreamPage'
 // import SingleQuestionPage from './SingleQuestionPage'
 import CreateQuestionPage from './CreateQuestionPage'
+import SingleQuestionPage from 'containers/SingleQuestionPage'
+
 // import ProfilePage from './ProfilePage'
 
 @inject('UserStore')
@@ -25,6 +27,11 @@ class AppContainer extends Component {
           component={StreamPage}
         />
         <Route exact path={`${match.url}/ask`} component={CreateQuestionPage} />
+        <Route
+          exact
+          path={`${match.url}/question/:id`}
+          component={SingleQuestionPage}
+        />
       </MainContainer>
     )
   }

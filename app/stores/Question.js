@@ -7,7 +7,8 @@ import { extendObservable, toJS, when } from 'mobx'
 // } from 'controllers/User'
 import {
   upvoteQuestionMutation,
-  downvoteQuestionMutation
+  downvoteQuestionMutation,
+  createQuestionMutation
 } from 'controllers/Question'
 import graphql from 'mobx-apollo'
 import client from '../apollo'
@@ -27,6 +28,16 @@ class Question {
       mutation: downvoteQuestionMutation,
       variables: {
         id: questionId
+      }
+    })
+  }
+  createQuestion = ({ content, title, communityId }) => {
+    client.mutate({
+      mutation: createQuestionMutation,
+      variables: {
+        content,
+        title,
+        communityId
       }
     })
   }

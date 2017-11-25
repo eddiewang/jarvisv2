@@ -44,7 +44,7 @@ export default `
   }
 
   type Mutation {
-    createQuestion(title: String!, content: String!, memberId: Int!): QuestionCreationResponse!
+    createQuestion(title: String!, content: String!, communityId: Int!): QuestionCreationResponse!
     upvoteQuestion(id: Int!): VoteResponse!
     downvoteQuestion(id: Int!): VoteResponse!
   }

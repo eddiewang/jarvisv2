@@ -34,7 +34,7 @@ class Header extends Component {
             >
               Ask New Question
             </Link>
-            <a
+            {/* <a
               href='#'
               className='search-link hidden-md-down'
               data-toggle='search'
@@ -43,10 +43,10 @@ class Header extends Component {
               Type anywhere to
               {' '}
               <span className='bold'>search</span>
-            </a>
+            </a> */}
           </div>
           <div className='d-flex align-items-center'>
-            <ul className='hidden-md-down notification-list no-margin hidden-sm-down b-grey b-r no-style p-l-30 p-r-20'>
+            {/* <ul className='hidden-md-down notification-list no-margin hidden-sm-down b-grey b-r no-style p-l-30 p-r-20'>
               <li className='p-r-10 inline'>
                 <div className='dropdown'>
                   <a
@@ -97,7 +97,7 @@ class Header extends Component {
 
                 </div>
               </li>
-            </ul>
+            </ul> */}
 
             <div className='pull-left p-r-10 fs-14 font-heading hidden-md-down m-l-20'>
               <span className='semi-bold'>

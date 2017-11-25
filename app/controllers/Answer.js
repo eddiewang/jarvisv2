@@ -19,7 +19,7 @@ export const AnswerFragment = gql`
 
 export const createAnswerMutation = gql`
   mutation ($communityId: Int!, $questionId: Int!, $title: String!, $content: String!) {
-    createAnswer(title: $title, content: $content, communityId: $communityId) {
+    createAnswer(title: $title, content: $content, communityId: $communityId, questionId: $questionId) {
       ok
       answer {
         ...AnswerDefault

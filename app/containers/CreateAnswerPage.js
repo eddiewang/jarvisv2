@@ -33,7 +33,7 @@ const defaultAnswerState = {
 }
 
 @withApollo
-@inject('UserStore')
+@inject('UserStore', 'AnswerStore')
 @observer
 class CreateAnswerPage extends Component {
   constructor (props) {
@@ -89,48 +89,44 @@ class CreateAnswerPage extends Component {
     }
   }
   _handleEditor = e => {
+    this.content = e
     // this.props.ui.answer.content = e
   }
   _createQuestion = async e => {
-    // TODO frontend validation
-    // const { answer } = this.props.ui
-    // if (checkEmpty(answer.content)) {
-    //   notify({
-    //     style: 'bar',
-    //     position: 'top-right',
-    //     message: 'Empty content',
-    //     type: 'warning',
-    //     showClose: false,
-    //     timeout: 4000
-    //   })
-    // } else {
-    //   try {
-    //     const { profile } = this.props.user
-    //     const { question } = this.props
-    //     const res = await this.props.createAnswer({
-    //       variables: {
-    //         content: answer.content,
-    //         userId: profile.id,
-    //         anonymous: answer.anonymous,
-    //         questionId: question.id
-    //       }
-    //     })
-    //     await this.props.cb(res.data.createAnswer)
-    //     answer.pending = false
-    //     answer.content = ''
-    //   } catch (err) {
-    //     // TODO implement error notify
-    //     console.log(err)
-    //     notify({
-    //       style: 'bar',
-    //       position: 'top-right',
-    //       message: 'Error answering question.',
-    //       type: 'danger',
-    //       showClose: false,
-    //       timeout: 4000
-    //     })
-    //   }
-    // }
+    const { anonymous, content } = this
+    if (checkEmpty(content)) {
+      notify({
+        style: 'bar',
+        position: 'top-right',
+        message: 'Empty content',
+        type: 'warning',
+        showClose: false,
+        timeout: 4000
+      })
+    } else {
+      try {
+        const { question } = this.props
+        const res = await this.props.AnswerStore.createAnswer({
+          title: 'default',
+          content,
+          communityId: question.community.id,
+          questionId: question.id
+        })
+        this.pending = false
+        this.content = ''
+      } catch (err) {
+        // TODO implement error notify
+        console.log(err)
+        notify({
+          style: 'bar',
+          position: 'top-right',
+          message: 'Error answering question.',
+          type: 'danger',
+          showClose: false,
+          timeout: 4000
+        })
+      }
+    }
   }
 }
 

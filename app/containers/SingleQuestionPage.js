@@ -26,7 +26,7 @@ import { singleQuestionQuery } from 'controllers/Question'
 // import { singleQuestion } from './controllers/Post'
 
 @withApollo
-@inject('UserStore')
+@inject('UserStore', 'QuestionStore')
 @observer
 class SingleQuestionPage extends Component {
   _updateView = () => {
@@ -70,7 +70,6 @@ class SingleQuestionPage extends Component {
   }
 
   render () {
-    console.log(this.props.singleQuestion)
     if (
       !this.props.singleQuestion.loading &&
       this.props.singleQuestion.singleQuestion
@@ -78,7 +77,7 @@ class SingleQuestionPage extends Component {
       this._updateView()
       const s = this.props.singleQuestion.singleQuestion
       const communityName = capitalize(s.community.name)
-      const { title, content, upvotes, downvotes, vote, user } = s
+      const { title, content, upvotes, downvotes, vote, user, id, answers } = s
 
       return (
         <div className='page-container'>
@@ -123,12 +122,12 @@ class SingleQuestionPage extends Component {
                         <div className='pull-right sm-pull-reset'>
                           <UpvoteWrapper className='btn-group'>
                             <VoteButton
-                              onClick={this._handleUpvote}
+                              onClick={this._handleUpvote(id)}
                               icon='fa-angle-double-up'
                               active={vote === 'u'}
                             />
                             <VoteButton
-                              onClick={this._handleDownvote}
+                              onClick={this._handleDownvote(id)}
                               icon='fa-angle-double-down'
                               active={vote === 'd'}
                             />
@@ -153,12 +152,12 @@ class SingleQuestionPage extends Component {
 
               </div>
               <div className='container-fluid container-fixed-lg m-t-30'>
-                {/* <MapAnswersContainer
+                <MapAnswersContainer
                   amount={2}
                   skip={0}
-                  answers={q.answers}
+                  answers={answers}
                   ui={this.props.ui}
-                /> */}
+                />
               </div>
             </div>
             <Footer />
@@ -176,7 +175,9 @@ class SingleQuestionPage extends Component {
       )
     }
   }
-  _handleUpvote = async e => {
+  _handleUpvote = id => async e => {
+    const { upvoteQuestion } = this.props.QuestionStore
+    upvoteQuestion(id)
     // const q = this.props.singleQuestion.Question
     // const userId = this.props.user.profile.id
     // const questionId = q.id
@@ -200,7 +201,9 @@ class SingleQuestionPage extends Component {
     //   console.log(err)
     // }
   }
-  _handleDownvote = async e => {
+  _handleDownvote = id => async e => {
+    const { downvoteQuestion } = this.props.QuestionStore
+    downvoteQuestion(id)
     // const q = this.props.singleQuestion.Question
     // const userId = this.props.user.profile.id
     // const questionId = q.id

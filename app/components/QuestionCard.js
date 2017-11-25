@@ -37,7 +37,7 @@ class QuestionCard extends Component {
                   <div className='btn-group m-r-15'>
                     {categoryEnabled &&
                       <button className='btn btn-tag btn-tag-light'>
-                        <Link to={`/app/stream/${id}`}>
+                        <Link to={`/app/stream/${community.id}`}>
                           {capitalize(category)}
                         </Link>
                       </button>}
@@ -108,10 +108,10 @@ const CardSection = styled.div`
   }
 `
 
-const appWithApollo = compose(
-  graphql(upvoteQuestion, { name: 'upvote' }),
-  graphql(downvoteQuestion, { name: 'downvote' }),
-  graphql(neutralizeQuestion, { name: 'neutralize' })
-)(QuestionCard)
+// const appWithApollo = compose(
+//   graphql(upvoteQuestion, { name: 'upvote' }),
+//   graphql(downvoteQuestion, { name: 'downvote' }),
+//   graphql(neutralizeQuestion, { name: 'neutralize' })
+// )(QuestionCard)
 
 export default withRouter(QuestionCard)

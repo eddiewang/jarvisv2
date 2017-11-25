@@ -17,6 +17,7 @@ import AppContainer from 'containers/AppContainer'
 import UserStore from 'stores/User'
 import QuestionStore from 'stores/Question'
 import CommunityStore from 'stores/Community'
+import AnswerStore from 'stores/Answer'
 
 const runScripts = () => {
   const $ = window.$
@@ -58,7 +59,8 @@ const runScripts = () => {
 const stores = {
   UserStore,
   QuestionStore,
-  CommunityStore
+  CommunityStore,
+  AnswerStore
 }
 class App extends React.Component {
   render () {

@@ -1,4 +1,5 @@
 import { gql } from 'react-apollo'
+import { AnswerFragment } from 'controllers/Answer'
 
 const QuestionFragment = gql`
  fragment QuestionDefault on Question {
@@ -17,7 +18,11 @@ const QuestionFragment = gql`
   upvotes
   downvotes
   vote
+  answers {
+    ...AnswerDefault
+  }
  }
+ ${AnswerFragment}
 `
 export const createQuestionMutation = gql`
  mutation ($communityId: Int!, $content: String!, $title: String!) {

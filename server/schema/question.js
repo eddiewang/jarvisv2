@@ -26,7 +26,7 @@ export default `
 
   type QuestionCreationResponse {
     ok: Boolean!
-    question: Question
+    question: Question!
     error: [Error!]
   }
 
@@ -36,7 +36,7 @@ export default `
     questionId: String!
   }
 
-  type VoteResponse {
+  type QuestionVoteResponse {
     ok: Boolean!,
     vote: Vote,
     question: Question,
@@ -45,7 +45,7 @@ export default `
 
   type Mutation {
     createQuestion(title: String!, content: String!, communityId: Int!): QuestionCreationResponse!
-    upvoteQuestion(id: Int!): VoteResponse!
-    downvoteQuestion(id: Int!): VoteResponse!
+    upvoteQuestion(id: Int!): QuestionVoteResponse!
+    downvoteQuestion(id: Int!): QuestionVoteResponse!
   }
 `

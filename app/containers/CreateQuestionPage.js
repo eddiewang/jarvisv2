@@ -172,12 +172,14 @@ class CreateQuestionPage extends Component {
       })
     } else {
       try {
-        await this.props.QuestionStore.createQuestion({
+        const response = await this.props.QuestionStore.createQuestion({
           title,
           content,
           communityId: category
         })
-        this.pending = false
+        setTimeout(() => {
+          this.pending = false
+        }, 500)
       } catch (err) {
         // TODO implement error notify
         console.log(err)

@@ -6,7 +6,7 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true
     },
     vote: {
-      type: DataTypes.CHAR
+      type: DataTypes.STRING
     }
   })
 

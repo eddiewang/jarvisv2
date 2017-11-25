@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import styled from 'styled-components'
-import { checkId } from 'utils/helper'
 // Components
 import InlineAvatar from 'components/InlineAvatar'
 import ReactQuill from 'react-quill'
@@ -14,32 +13,14 @@ import CardStatTag from 'components/CardStatTag'
 //   neutralizeAnswer
 // } from '../controllers/Voting'
 import { graphql, compose } from 'react-apollo'
-@inject('user')
+@inject('UserStore', 'AnswerStore')
 @observer
 class AnswerCard extends Component {
   state = {
     active: false
   }
-  upvoteActive = () => {
-    return (
-      checkId(this.props.profile.upvotes, this.props.user.profile.id).length > 0
-    )
-  }
-  downvoteActive = () => {
-    return (
-      checkId(this.props.profile.downvotes, this.props.user.profile.id).length >
-      0
-    )
-  }
-  voteCount = () => {
-    const uData = this.props.profile.upvotes
-    const dData = this.props.profile.downvotes
-    return uData.length - dData.length
-  }
   render () {
-    const { profile } = this.props
-    // const isOwnAnswer =
-    //   this.props.profile.user.id === this.props.user.profile.id
+    const { vote, user, content, upvotes, downvotes } = this.props.profile
     return (
       <div
         className='card-block no-padding'
@@ -50,20 +31,20 @@ class AnswerCard extends Component {
           <div className='card-header m-b-20'>
             <div className='row'>
               <div className='col-md-6'>
-                <InlineAvatar profile={profile.user} />
+                <InlineAvatar profile={user} />
               </div>
               <div className='col-md-6 text-right'>
                 {/* {isOwnAnswer ? <CardStatTag stat='Self Answer' /> : null} */}
-                <CardStatTag title={'Upvotes'} stat={this.voteCount()} />
+                <CardStatTag title={'Upvotes'} stat={upvotes - downvotes} />
                 <div className='btn-group m-l-15'>
                   <VoteButton
                     onClick={this._handleUpvote}
-                    active={this.upvoteActive()}
+                    active={vote === 'u'}
                     icon='fa-angle-double-up'
                   />
                   <VoteButton
                     onClick={this._handleDownvote}
-                    active={this.downvoteActive()}
+                    active={vote === 'd'}
                     icon='fa-angle-double-down'
                   />
                 </div>
@@ -74,7 +55,7 @@ class AnswerCard extends Component {
             <div className='row'>
               <div className='col-md-12'>
                 <QuillWrapper>
-                  <ReactQuill value={profile.content} theme={null} readOnly />
+                  <ReactQuill value={content} theme={null} readOnly />
                 </QuillWrapper>
               </div>
             </div>
@@ -102,50 +83,14 @@ class AnswerCard extends Component {
     })
   }
   _handleUpvote = async e => {
-    const userId = this.props.user.profile.id
-    const answerId = this.props.profile.id
-    try {
-      if (this.upvoteActive()) {
-        await this.props.neutralize({
-          variables: {
-            userId,
-            answerId
-          }
-        })
-      } else {
-        await this.props.upvote({
-          variables: {
-            userId,
-            answerId
-          }
-        })
-      }
-    } catch (err) {
-      console.log(err)
-    }
+    const { upvoteAnswer } = this.props.AnswerStore
+    const { id } = this.props.profile
+    upvoteAnswer(id)
   }
   _handleDownvote = async e => {
-    const userId = this.props.user.profile.id
-    const answerId = this.props.profile.id
-    try {
-      if (this.downvoteActive()) {
-        await this.props.neutralize({
-          variables: {
-            userId,
-            answerId
-          }
-        })
-      } else {
-        await this.props.downvote({
-          variables: {
-            userId,
-            answerId
-          }
-        })
-      }
-    } catch (err) {
-      console.log(err)
-    }
+    const { downvoteAnswer } = this.props.AnswerStore
+    const { id } = this.props.profile
+    downvoteAnswer(id)
   }
 }
 

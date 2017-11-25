@@ -44,45 +44,49 @@ class CreateAnswerPage extends Component {
   render () {
     const { content, anonymous, pending } = this
     const { me } = this.props.UserStore
-    return (
-      <div>
-        <div className='modal-header'>
-          <h5 className='text-left p-b-5'>
-            <span className='semi-bold'>Answer</span> Question
-          </h5>
-        </div>
-        <div className='modal-body'>
-          <div className='row'>
-            <div className='col-md-12'>
-              <SummernoteWrapper>
-                <ReactQuill
-                  modules={rq}
-                  value={content}
-                  onChange={this._handleEditor}
-                />
-              </SummernoteWrapper>
-            </div>
+    if (!me.loading && me.data) {
+      return (
+        <div>
+          <div className='modal-header'>
+            <h5 className='text-left p-b-5'>
+              <span className='semi-bold'>Answer</span> Question
+            </h5>
+          </div>
+          <div className='modal-body'>
+            <div className='row'>
+              <div className='col-md-12'>
+                <SummernoteWrapper>
+                  <ReactQuill
+                    modules={rq}
+                    value={content}
+                    onChange={this._handleEditor}
+                  />
+                </SummernoteWrapper>
+              </div>
 
-          </div>
-          <div className='row'>
-            <div className='col-md-6 m-t-15'>
-              <InlineAvatar profile={me} />
             </div>
-            <div className='text-right col-md-6 m-t-15'>
-              <button
-                onClick={this._createQuestion}
-                type='button'
-                className='btn btn-primary btn-lg btn-large fs-15'
-                data-dismiss='modal'
-                aria-hidden='true'
-              >
-                Post Answer
-              </button>
+            <div className='row'>
+              <div className='col-md-6 m-t-15'>
+                <InlineAvatar profile={me.data.me} />
+              </div>
+              <div className='text-right col-md-6 m-t-15'>
+                <button
+                  onClick={this._createQuestion}
+                  type='button'
+                  className='btn btn-primary btn-lg btn-large fs-15'
+                  data-dismiss='modal'
+                  aria-hidden='true'
+                >
+                  Post Answer
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    )
+      )
+    } else {
+      return null
+    }
   }
   _handleEditor = e => {
     // this.props.ui.answer.content = e

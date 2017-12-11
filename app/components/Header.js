@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
-import { toJS } from 'mobx'
+import { toJS, extendObservable } from 'mobx'
 import { capitalize } from 'utils/helper'
 // Assets
 import avatar from '../assets/avatar.png'
@@ -9,13 +9,24 @@ import avatar2x from '../assets/avatar@2x.png'
 // Components
 import { Link } from 'react-router-dom'
 import Logo from './Logo'
+import graphql from 'mobx-apollo'
+import client from '../apollo'
+import { meQuery } from 'controllers/User'
 
 @inject('UserStore')
 @observer
 class Header extends Component {
+  constructor(props) {
+    super(props)
+    extendObservable(this, {
+      get me() {
+        return graphql({client, query: meQuery})
+      }
+    })
+  }
   render () {
-    if (!this.props.UserStore.me.loading) {
-      const { me } = this.props.UserStore
+    if (!this.me.loading) {
+      const { me } = this
       const { firstName, lastName } = me.data.me
       return (
         <div className='header '>

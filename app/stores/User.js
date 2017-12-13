@@ -1,4 +1,4 @@
-import { extendObservable, toJS, when } from 'mobx'
+import { extendObservable, toJS, when, observable } from 'mobx'
 import {
   loginMutation,
   registerMutation,
@@ -33,8 +33,9 @@ class User {
       variables: { email, password }
     })
 
+  @observable logout = true
+
   saveTokens = async (token, refreshToken) => {
-    console.log('saving', token)
     localStorage.setItem('token', token)
     localStorage.setItem('refreshToken', refreshToken)
   }

@@ -30,7 +30,7 @@ class RegisterPage extends Component {
   handleRegister = async e => {
     e.preventDefault()
     const { firstName, lastName, jobRole, email, password } = this
-    const { register, saveTokens } = this.props.UserStore
+    const { register, saveTokens, login } = this.props.UserStore
     const userObject = {
       firstName,
       lastName,
@@ -42,6 +42,17 @@ class RegisterPage extends Component {
       const response = await register(userObject)
       const { data: { register: { ok, user, errors } } } = response
       console.log(ok, user, errors)
+      if (ok) {
+        const response = await login({ email, password })
+        const {
+          data: { login: { ok, token, refreshToken, errors } }
+        } = response
+        if (ok && token && refreshToken) {
+          saveTokens(token, refreshToken)
+          this.props.UserStore.logout = false
+          this.props.history.push('/app/stream/all')
+        }
+      }
     } catch (err) {
       console.log('err', err)
     }

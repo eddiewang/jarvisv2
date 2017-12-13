@@ -26,7 +26,6 @@ class QuestionCard extends Component {
     const { title, content, user, id, community, vote } = this.props.details
     const categoryEnabled = this.props.match.params.category === 'all'
     const category = community.name
-    console.log(vote)
     return (
       <div>
         <div className='card-block no-padding'>

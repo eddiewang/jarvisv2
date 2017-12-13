@@ -6,13 +6,16 @@ import notify from 'utils/notification'
 import { checkEmpty, capitalize } from 'utils/helper'
 // Graphql
 // import { createQuestion } from '.controllers/Post'
-import { graphql, compose } from 'react-apollo'
+import { compose } from 'react-apollo'
+import graphql from 'mobx-apollo'
 // Components
 import Header from 'components/Header'
 import CommunityTag from 'components/CommunityTag'
 import { Redirect } from 'react-router-dom'
 // Assets
 import ReactQuill from 'react-quill'
+import client from '../apollo'
+import { allCommunitiesQuery } from 'controllers/Community'
 
 const defaultAskState = {
   title: '',
@@ -42,7 +45,14 @@ const rq = {
 class CreateQuestionPage extends Component {
   constructor (props) {
     super(props)
-    extendObservable(this, defaultAskState)
+    extendObservable(
+      this,
+      Object.assign({}, defaultAskState, {
+        get allCommunities () {
+          return graphql({ client, query: allCommunitiesQuery })
+        }
+      })
+    )
   }
   componentDidMount () {
     window.$('.ql-toolbar').find(':button').attr('tabindex', '-1')
@@ -51,7 +61,7 @@ class CreateQuestionPage extends Component {
     this.category = id
   }
   mapCommunities = () => {
-    const { allCommunities } = this.props.CommunityStore
+    const { allCommunities } = this
 
     if (!allCommunities.loading && !allCommunities.error) {
       return allCommunities.data.allCommunities.map(c => (

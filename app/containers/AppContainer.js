@@ -10,7 +10,7 @@ import StreamPage from 'containers/StreamPage'
 // import SingleQuestionPage from './SingleQuestionPage'
 import CreateQuestionPage from './CreateQuestionPage'
 import SingleQuestionPage from 'containers/SingleQuestionPage'
-
+import ProfilePage from 'containers/ProfilePage'
 // import ProfilePage from './ProfilePage'
 
 @inject('UserStore')
@@ -18,9 +18,12 @@ import SingleQuestionPage from 'containers/SingleQuestionPage'
 class AppContainer extends Component {
   render () {
     const { match } = this.props
+    const { logout } = this.props.UserStore
+    console.log(logout)
     return (
       <MainContainer>
         <Sidebar />
+        {logout && <Redirect to='/' />}
         <Route
           exact
           path={`${match.url}/stream/:category`}
@@ -32,6 +35,8 @@ class AppContainer extends Component {
           path={`${match.url}/question/:id`}
           component={SingleQuestionPage}
         />
+        <Route exact path={`${match.url}/profile`} component={ProfilePage} />
+
       </MainContainer>
     )
   }

@@ -6,6 +6,7 @@ export const meQuery = gql`
       id
       firstName
       lastName
+      jobRole
       email
     }
   }

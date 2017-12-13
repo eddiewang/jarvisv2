@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS, extendObservable } from 'mobx'
-import { capitalize } from 'utils/helper'
+import { capitalize, avatarApi } from 'utils/helper'
 // Assets
 import avatar from '../assets/avatar.png'
 import avatar2x from '../assets/avatar@2x.png'
 
 // Components
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import Logo from './Logo'
 import graphql from 'mobx-apollo'
 import client from '../apollo'
@@ -16,18 +16,20 @@ import { meQuery } from 'controllers/User'
 @inject('UserStore')
 @observer
 class Header extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     extendObservable(this, {
-      get me() {
-        return graphql({client, query: meQuery})
+      get me () {
+        return graphql({ client, query: meQuery })
       }
     })
   }
   render () {
     if (!this.me.loading) {
       const { me } = this
-      const { firstName, lastName } = me.data.me
+      const { firstName, lastName, id } = me.data.me
+      const avatarUrl = avatarApi(id)
+
       return (
         <div className='header '>
           <a
@@ -128,14 +130,7 @@ class Header extends Component {
                 aria-expanded='false'
               >
                 <span className='thumbnail-wrapper d32 circular inline'>
-                  <img
-                    src={avatar}
-                    alt=''
-                    data-src={avatar}
-                    data-src-retina={avatar2x}
-                    width='32'
-                    height='32'
-                  />
+                  <img src={avatarUrl} alt='' width='32' height='32' />
                 </span>
               </button>
               <div
@@ -145,9 +140,9 @@ class Header extends Component {
                 <Link to='/app/profile' className='dropdown-item'>
                   <i className='pg-menu' /> Profile
                 </Link>
-                <a href='#' className='dropdown-item'>
+                {/* <a href='#' className='dropdown-item'>
                   <i className='pg-refresh' /> Feedback
-                </a>
+                </a> */}
                 <a
                   onClick={this._logout}
                   className='clearfix bg-master-lighter dropdown-item'
@@ -167,7 +162,8 @@ class Header extends Component {
   _logout = () => {
     window.localStorage.removeItem('token')
     window.localStorage.removeItem('refreshToken')
+    this.props.UserStore.logout = true
   }
 }
 
-export default Header
+export default withRouter(Header)

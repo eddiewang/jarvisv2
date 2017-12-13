@@ -29,6 +29,14 @@ const defaultState = {
 class LoginPage extends Component {
   componentDidMount () {
     extendObservable(this)
+    this.getTokens()
+  }
+  getTokens = async () => {
+    const token = await window.localStorage.getItem('token')
+    const refresh = await window.localStorage.getItem('refreshToken')
+    if (token && refresh) {
+      this.props.UserStore.logout = false
+    }
   }
   handleForm = e => {
     const { name, value } = e.target
@@ -43,6 +51,7 @@ class LoginPage extends Component {
       const { data: { login: { ok, token, refreshToken, errors } } } = response
       if (ok && token && refreshToken) {
         saveTokens(token, refreshToken)
+        this.props.UserStore.logout = false
         this.props.history.push('/app/stream/all')
       }
     } catch (err) {
@@ -51,10 +60,10 @@ class LoginPage extends Component {
   }
   render () {
     const { email, password, errors } = this
-    const { me } = this.props.UserStore
+    const { logout } = this.props.UserStore
     return (
       <div className='login-wrapper '>
-        {!me.loading && me.data ? <Redirect to='/app/stream/all' /> : null}
+        {!logout && <Redirect to='/app/stream/all' />}
         <div className='bg-pic'>
           <img
             src={dfbg}

@@ -5,12 +5,24 @@ import Logo from './Logo'
 import { Link } from 'react-router-dom'
 import SidebarLink from 'components/SidebarLink'
 import { inject, observer } from 'mobx-react'
+import graphql from 'mobx-apollo'
+import { extendObservable } from 'mobx'
+import client from '../apollo'
+import { allCommunitiesQuery } from 'controllers/Community'
 
 @inject('CommunityStore')
 @observer
 class Sidebar extends Component {
+  constructor (props) {
+    super(props)
+    extendObservable(this, {
+      get allCommunities () {
+        return graphql({ client, query: allCommunitiesQuery })
+      }
+    })
+  }
   mapLinks = () => {
-    const { allCommunities } = this.props.CommunityStore
+    const { allCommunities } = this
     if (!allCommunities.loading && !allCommunities.error) {
       return allCommunities.data.allCommunities.map(c => (
         <SidebarLink key={c.id} community={c} />

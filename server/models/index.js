@@ -4,13 +4,15 @@ const isProd = process.env.NODE_ENV === 'production'
 
 let sequelize
 if (isProd) {
-  sequelize = new Sequelize('scotiabank', 'eddiewang', '', {
+  const connectionString = process.env.DATABASE_URL
+
+  cosnole.log('is prod', connectionString)
+  sequelize = new Sequelize(connectionString, {
     dialect: 'postgres',
     operatorsAliases: Sequelize.Op
   })
 } else {
-  const connectionString = process.env.DATABASE_URL
-  sequelize = new Sequelize(connectionString, {
+  sequelize = new Sequelize('scotiabank', 'eddiewang', '', {
     dialect: 'postgres',
     operatorsAliases: Sequelize.Op
   })

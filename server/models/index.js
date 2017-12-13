@@ -6,7 +6,7 @@ let sequelize
 if (isProd) {
   const connectionString = process.env.DATABASE_URL
 
-  cosnole.log('is prod', connectionString)
+  console.log('is prod', connectionString)
   sequelize = new Sequelize(connectionString, {
     dialect: 'postgres',
     operatorsAliases: Sequelize.Op

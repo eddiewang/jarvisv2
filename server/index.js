@@ -114,7 +114,7 @@ const DEFAULT_PORT = argv.port || process.env.PORT || 3000
 const isInteractive = process.stdout.isTTY
 
 models.sequelize.sync({}).then(() => {
-  mockData(models)
+  // mockData(models)
   detect(DEFAULT_PORT).then(port => {
     if (port === DEFAULT_PORT) {
       run(port)
